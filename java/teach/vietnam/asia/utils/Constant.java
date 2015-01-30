@@ -100,4 +100,6 @@ public class Constant {
     public static final String INTENT_WORD = "intent_word";
     public static final String PREF_BG_THEME = "bg_theme2";
 
+    public static final int REQ_CODE_SPEECH_INPUT = 1000;
+
 }

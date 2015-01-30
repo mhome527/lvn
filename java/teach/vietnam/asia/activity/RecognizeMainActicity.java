@@ -4,9 +4,11 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -117,6 +119,24 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
     @Override
     public void onBackStackChanged() {
         mShowingBack = (getFragmentManager().getBackStackEntryCount() > 0);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case Constant.REQ_CODE_SPEECH_INPUT:
+                if (resultCode == RESULT_OK && null != data) {
+
+                    Fragment fragment;
+                    fragment = getFragmentManager().findFragmentById(R.id.container);
+                    if (fragment!=null && fragment instanceof LearnRecoginzeFragment) {
+                        ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                        ((LearnRecoginzeFragment) fragment).setTextVoid(result.get(0));
+                    }
+                }
+                break;
+        }
     }
 
     public void showMenu() {

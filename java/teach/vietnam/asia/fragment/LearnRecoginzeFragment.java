@@ -32,6 +32,7 @@ public class LearnRecoginzeFragment extends BaseFragment {
     private Prefs pref;
     private ImageButton imgLeft;
     private ImageButton imgRight;
+    private TextView tvSearch;
 
     /**
      * Use this factory method to create a new instance of
@@ -77,9 +78,13 @@ public class LearnRecoginzeFragment extends BaseFragment {
         tvAmount = getViewChild(R.id.tvAmount);
         imgLeft = getViewChild(R.id.imgLeft);
         imgRight = getViewChild(R.id.imgRight);
+        tvSearch = getViewChild(R.id.tvSearch);
+
         setListenerView(R.id.imgLeft);
         setListenerView(R.id.imgRight);
         setListenerView(R.id.imgMenu);
+        setListenerView(R.id.imgRecording);
+        setListenerView(R.id.llRecognize);
 //        audio = new AudioPlayer(getActivity());
         setInitData();
 
@@ -137,8 +142,25 @@ public class LearnRecoginzeFragment extends BaseFragment {
                 pagerRecognize.setCurrentItem(currPage);
 
                 break;
+            case R.id.llRecognize:
+            case R.id.imgRecording:
+                Utility.promptSpeechInput(getActivity(), Constant.REQ_CODE_SPEECH_INPUT, "vi");
+                break;
         }
     }
+
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        switch (requestCode) {
+//            case REQ_CODE_SPEECH_INPUT:
+//                if (resultCode == getActivity().RESULT_OK && null != data) {
+//
+//                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+//                }
+//                break;
+//        }
+//    }
 
     private void setInitData() {
 //        lang = RecognizeActivity.this.getString(R.string.language);
@@ -194,6 +216,10 @@ public class LearnRecoginzeFragment extends BaseFragment {
         this.currPage = currPage;
         pagerRecognize.setCurrentItem(currPage);
     }
+    public void setTextVoid(String text) {
+        tvSearch.setText(text);
+    }
+
 
 
 }

@@ -67,7 +67,7 @@ public class RecognizeListAdapter extends BaseAdapter {
             view = layoutInflater.inflate(R.layout.recognize_item, null);
             holder.tvWord = (TextView) view.findViewById(R.id.tvWord);
             holder.tvEx = (TextView) view.findViewById(R.id.tvEx);
-            holder.tvOther = (TextView) view.findViewById(R.id.tvOther);
+//            holder.tvOther = (TextView) view.findViewById(R.id.tvOther);
 
             holder.btnSpeak = (Button) view.findViewById(R.id.btnSpeak);
             view.setTag(holder);
@@ -75,27 +75,27 @@ public class RecognizeListAdapter extends BaseAdapter {
             holder = (ViewHolder) view.getTag();
         }
 
-        if (listData.get(position).getEx() != null)
+        if (listData.get(position).getEx() != null && !listData.get(position).getEx().equals("")) {
             holder.tvEx.setText(listData.get(position).getEx());
 //        holder.tvOther.setText("");
 
-        if (lang.equals("ja")) {
-            if (listData.get(position).getJa() != null && !listData.get(position).getJa().equals("")) {
+            if (lang.equals("ja")) {
+                if (listData.get(position).getJa() != null && !listData.get(position).getJa().equals("")) {
 //                holder.tvEx.setText(listData.get(position).getEx());
-                holder.tvOther.setText(": " + listData.get(position).getJa());
-            }
-        } else if (lang.equals("ko")) {
-            if (listData.get(position).getKo() != null && !listData.get(position).getKo().equals("")) {
+                    holder.tvEx.setText(listData.get(position).getEx() + ":" + listData.get(position).getJa());
+                }
+            } else if (lang.equals("ko")) {
+                if (listData.get(position).getKo() != null && !listData.get(position).getKo().equals("")) {
 //                holder.tvEx.setText(listData.get(position).getEx());
-                holder.tvOther.setText(": " + listData.get(position).getKo());
-            }
-        } else if (lang.equals("en")) {
-            if (listData.get(position).getEn() != null && !listData.get(position).getEn().equals("")) {
+                    holder.tvEx.setText(listData.get(position).getEx() + ":" + listData.get(position).getKo());
+                }
+            } else if (lang.equals("en")) {
+                if (listData.get(position).getEn() != null && !listData.get(position).getEn().equals("")) {
 //                holder.tvEx.setText(listData.get(position).getEx());
-                holder.tvOther.setText(": " + listData.get(position).getEn());
+                    holder.tvEx.setText(listData.get(position).getEx() + ":" + listData.get(position).getEn());
+                }
             }
         }
-
         holder.tvWord.setText(listData.get(position).getVn());
         holder.btnSpeak.setOnClickListener(new View.OnClickListener() {
             @Override
