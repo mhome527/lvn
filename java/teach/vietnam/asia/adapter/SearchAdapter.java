@@ -1,15 +1,5 @@
 package teach.vietnam.asia.adapter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import teach.vietnam.asia.R;
-import teach.vietnam.asia.entity.tblViet;
-import teach.vietnam.asia.utils.NumberToWord;
-import teach.vietnam.asia.utils.ULog;
-import teach.vietnam.asia.utils.Utility;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -20,40 +10,46 @@ import android.widget.ImageView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import teach.vietnam.asia.R;
+import teach.vietnam.asia.entity.tblVietEN;
+import teach.vietnam.asia.utils.NumberToWord;
+import teach.vietnam.asia.utils.ULog;
+import teach.vietnam.asia.utils.Utility;
+
 @SuppressLint("DefaultLocale")
 public class SearchAdapter extends BaseAdapter implements SectionIndexer {
 
     private Context context;
-    private List<tblViet> listData;
-    private List<tblViet> listData2;
+    private List listData;
+    private List listData2;
     private LayoutInflater layoutInflater;
     private String lang = "";
     private String[] alpha;
 
-    public SearchAdapter(Context context, List<tblViet> listData) {
+    public SearchAdapter(Context context, List listData) {
         int i = 0;
         this.context = context;
         this.listData = listData;
-        listData2 = new ArrayList<tblViet>();
+        listData2 = new ArrayList();
         try {
             listData2.addAll(listData);
             layoutInflater = LayoutInflater.from(context);
             lang = context.getString(R.string.language);
             alpha = null;
             alpha = new String[listData.size()];
-            if (lang.equals("ja")) {
-                for (tblViet viet : listData) {
-                    alpha[i++] = viet.getJa().toString().replaceAll("<u>", "").replaceAll("</u>", "").split(" ")[0];
-                }
-            } else if (lang.equals("ko")) {
-                for (tblViet viet : listData) {
-                    alpha[i++] = viet.getKo().toString().replaceAll("<u>", "").replaceAll("</u>", "").split(" ")[0];
-                }
-            } else {
-                for (tblViet viet : listData) {
-                    alpha[i++] = viet.getEn().toString().replaceAll("<u>", "").replaceAll("</u>", "").split(" ")[0];
-                }
+
+//            for (tblVietEN viet : listData) {
+//                alpha[i++] = viet.getO1().toString().replaceAll("<u>", "").replaceAll("</u>", "").split(" ")[0];
+//            }
+
+            for (Object viet : listData) {
+                alpha[i++] = Utility.getO1(viet, lang).replaceAll("<u>", "").replaceAll("</u>", "").split(" ")[0];
             }
+
         } catch (Exception e) {
             ULog.e(SearchAllAdapter.class, "SearchAllAdapter Error: " + e.getMessage());
         }
@@ -91,20 +87,13 @@ public class SearchAdapter extends BaseAdapter implements SectionIndexer {
             holder = (ViewHolder) view.getTag();
         }
 
-        if (lang.equals("ja")) {
-            if (listData.get(position).getJa() != null)
-                holder.tvOther.setText(listData.get(position).getJa());
-        } else if (lang.equals("ko")) {
-            if (listData.get(position).getKo() != null)
-                holder.tvOther.setText(listData.get(position).getKo());
-        } else {
-            if (listData.get(position).getEn() != null)
-                holder.tvOther.setText(listData.get(position).getEn());
-        }
-        holder.tvVn.setText(listData.get(position).getVi());
+        if (Utility.getO1(listData.get(position), lang) != null)
+            holder.tvOther.setText(Utility.getO1(listData.get(position), lang));
+
+        holder.tvVn.setText(Utility.getVi(listData.get(position), lang));
 
         // img.setScaleType(ImageView.ScaleType.FIT_XY);
-        resourceId = Utility.getResourcesID(context, listData.get(position).getImg());
+        resourceId = Utility.getResourcesID(context, Utility.getImg(listData.get(position), lang));
         if (resourceId > 0) {
             holder.imgWord.setImageResource(resourceId);
             // holder.imgWord.setTag(resourceId);
@@ -115,36 +104,25 @@ public class SearchAdapter extends BaseAdapter implements SectionIndexer {
         return view;
     }
 
-    public class ViewHolder {
-        TextView tvOther;
-        TextView tvVn;
-        ImageView imgWord;
-    }
-
     private void resetAlphaSearch() {
         int i = 0;
         alpha = null;
         alpha = new String[listData.size()];
-        if (lang.equals("ja")) {
-            for (tblViet viet : listData) {
-                alpha[i++] = viet.getJa().toString().replaceAll("<u>", "").replaceAll("</u>", "").split(" ")[0];
-            }
-        } else if (lang.equals("ko")) {
-            for (tblViet viet : listData) {
-                alpha[i++] = viet.getKo().toString().replaceAll("<u>", "").replaceAll("</u>", "").split(" ")[0];
-            }
-        } else {
-            for (tblViet viet : listData) {
-                alpha[i++] = viet.getEn().toString().replaceAll("<u>", "").replaceAll("</u>", "").split(" ")[0];
-            }
+
+//        for (tblVietEN viet : listData) {
+//            alpha[i++] = viet.getO1().toString().replaceAll("<u>", "").replaceAll("</u>", "").split(" ")[0];
+//        }
+        for (Object viet : listData) {
+            alpha[i++] = Utility.getO1(viet, lang).replaceAll("<u>", "").replaceAll("</u>", "").split(" ")[0];
         }
+
     }
 
     @SuppressLint("DefaultLocale")
     public void filter(String charText) {
         String word1 = "", word2 = "";
         long number;
-        tblViet tmp;
+        tblVietEN tmp;
         try {
             charText = charText.toLowerCase(Locale.getDefault()).trim();
             ULog.i(SearchAdapter.this, "key: " + charText);
@@ -152,25 +130,13 @@ public class SearchAdapter extends BaseAdapter implements SectionIndexer {
             if (charText.length() == 0) {
                 listData.addAll(listData2);
             } else {
-                for (tblViet vi : listData2) {
-                    if (lang.toLowerCase().equals("ja")) {
-                        word1 = vi.getJa();
-                        word2 = vi.getJa2();
-                        if (word1.contains(charText) || charText.contains(word1)) {
-                            listData.add(vi);
-                        } else if (!word2.equals("") && (word2.contains(charText) || charText.contains(word2))) {
-                            listData.add(vi);
-                        }
-                    } else if (lang.toLowerCase().equals("ko")) {
-                        word1 = vi.getKo().toLowerCase();
-                        if (word1.contains(charText) || charText.contains(word1)) {
-                            listData.add(vi);
-                        }
-                    } else {
-                        word1 = vi.getEn().toLowerCase();
-                        if (word1.contains(charText) || charText.contains(word1)) {
-                            listData.add(vi);
-                        }
+                for (Object vi : listData2) {
+                    word1 = Utility.getO1(vi, lang);
+                    word2 = Utility.getO2(vi, lang);
+                    if (word1.contains(charText) || charText.contains(word1)) {
+                        listData.add(vi);
+                    } else if (!word2.equals("") && (word2.contains(charText) || charText.contains(word2))) {
+                        listData.add(vi);
                     }
                 }
             }
@@ -178,16 +144,8 @@ public class SearchAdapter extends BaseAdapter implements SectionIndexer {
             if (listData.size() == 0) {
                 if (!charText.equals("")) {
                     number = Utility.convertToLong(charText);
-                    if (number > -1) {
-                        tmp = new tblViet();
-                        tmp.setVi(NumberToWord.getWordFromNumber(number));
-                        tmp.setEn(charText);
-                        tmp.setJa(charText);
-                        tmp.setJa2(charText);
-                        tmp.setKo(charText);
-                        listData.add(tmp);
-                    }
-
+                    if (number > -1)
+                        listData.add(Utility.getDataObject(lang, NumberToWord.getWordFromNumber(number), charText));
                 }
             }
             resetAlphaSearch();
@@ -210,5 +168,11 @@ public class SearchAdapter extends BaseAdapter implements SectionIndexer {
     @Override
     public Object[] getSections() {
         return alpha;
+    }
+
+    public class ViewHolder {
+        TextView tvOther;
+        TextView tvVn;
+        ImageView imgWord;
     }
 }

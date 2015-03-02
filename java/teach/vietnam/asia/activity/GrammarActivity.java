@@ -38,4 +38,9 @@ public class GrammarActivity extends BaseActivity {
         });
     }
 
+    @Override
+    protected void reloadData() {
+
+    }
+
 }

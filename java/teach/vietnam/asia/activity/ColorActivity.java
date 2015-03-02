@@ -1,15 +1,16 @@
 package teach.vietnam.asia.activity;
 
-import teach.vietnam.asia.R;
-import teach.vietnam.asia.adapter.ColorAdapter;
-import teach.vietnam.asia.sound.AudioPlayer;
-import teach.vietnam.asia.utils.ULog;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+
+import teach.vietnam.asia.R;
+import teach.vietnam.asia.adapter.ColorAdapter;
+import teach.vietnam.asia.sound.AudioPlayer;
+import teach.vietnam.asia.utils.ULog;
 
 public class ColorActivity extends BaseActivity implements OnClickListener {
 
@@ -65,5 +66,10 @@ public class ColorActivity extends BaseActivity implements OnClickListener {
         super.onPause();
         if(audio !=null)
             audio.stopAll();
+    }
+
+    @Override
+    protected void reloadData() {
+
     }
 }

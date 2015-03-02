@@ -1,18 +1,5 @@
 package teach.vietnam.asia.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import teach.vietnam.asia.R;
-import teach.vietnam.asia.adapter.PhrasesAdapter;
-import teach.vietnam.asia.entity.DaoMaster;
-import teach.vietnam.asia.entity.tblViet;
-import teach.vietnam.asia.entity.tblVietDao;
-import teach.vietnam.asia.utils.Constant;
-import teach.vietnam.asia.utils.ULog;
-import teach.vietnam.asia.utils.Utility;
-import de.greenrobot.dao.query.QueryBuilder;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -27,22 +14,29 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.greenrobot.dao.AbstractDao;
+import de.greenrobot.dao.query.QueryBuilder;
+import teach.vietnam.asia.R;
+import teach.vietnam.asia.adapter.PhrasesAdapter;
+import teach.vietnam.asia.utils.Constant;
+import teach.vietnam.asia.utils.ULog;
+import teach.vietnam.asia.utils.Utility;
+
 public class PhrasesActivity extends BaseActivity implements OnClickListener {
     public static final int REQUEST_CODE_SEARCH = 500;
     private final int REQUEST_CODE_SPEECH_INPUT = 1000;
-
-    private EditText edtSearch;
-
-    private ListView lstPhrases;
-
-    private tblVietDao dao;
-    private DaoMaster daoMaster;
-    private ProgressDialog progressDialog;
-    private PhrasesAdapter adapter;
-    private List<tblViet> lstData;
     public boolean isClick = false;
     public boolean isSlowly = false;
+    private EditText edtSearch;
+    private ListView lstPhrases;
+    private ProgressDialog progressDialog;
+    private PhrasesAdapter adapter;
+    private List lstData;
     private CheckBox ckbSpeed;
+//    private String lang = "";
 
 
     @Override
@@ -62,7 +56,7 @@ public class PhrasesActivity extends BaseActivity implements OnClickListener {
 //		setListenerView(R.id.tvText1, this);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         initData();
-        new LoadData().execute();
+
     }
 
     @Override
@@ -106,7 +100,8 @@ public class PhrasesActivity extends BaseActivity implements OnClickListener {
                 int pos = data.getIntExtra(Constant.INTENT_POSITION, -1);
                 String word = data.getStringExtra(Constant.INTENT_WORD);
                 if (pos > -1) {
-                    lstData.get(pos).setDefault_word(word);
+//                    lstData.get(pos).setDefault_word(word);
+                    Utility.setDataObject(lang, lstData.get(pos), word);
                     adapter.notifyDataSetChanged();
                 } else
                     ULog.i(PhrasesActivity.class, "dont get word");
@@ -124,14 +119,25 @@ public class PhrasesActivity extends BaseActivity implements OnClickListener {
     @Override
     protected void onPause() {
         super.onPause();
-        if(adapter !=null && adapter.audio !=null)
+        if (adapter != null && adapter.audio != null)
             adapter.audio.stopAll();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        String langTmp;
         isClick = false;
+//        langTmp = PhrasesActivity.this.getString(R.string.language);
+//        if (lang.equals("") || !langTmp.equals(lang)) {
+//            lang = langTmp;
+//            new LoadData().execute();
+//        }
+    }
+
+    @Override
+    protected void reloadData() {
+        new LoadData().execute();
     }
 
     private void initData() {
@@ -183,19 +189,24 @@ public class PhrasesActivity extends BaseActivity implements OnClickListener {
 
         @Override
         protected Void doInBackground(Void... params) {
-            QueryBuilder<tblViet> qb;
+            QueryBuilder qb;
+            AbstractDao dao;
+
             try {
-                daoMaster = ((MyApplication) getApplication()).daoMaster;
-                dao = daoMaster.newSession().getTblVietDao();
+//                daoMaster = ((MyApplication) getApplication()).daoMaster;
+//                dao = daoMaster.newSession().getTblVietDao();
+//                qb = dao.queryBuilder();
+
+                dao = Utility.getDao(PhrasesActivity.this, lang);
                 qb = dao.queryBuilder();
 
-                qb.where(tblVietDao.Properties.Kind.eq(11));
+                qb.where(Utility.getKind(lang).eq(11));
                 // qb.orderAsc(tblKindDao.Properties.Pos);
                 ULog.i(this, "===data db:" + qb.list().size());
                 lstData = qb.list();
 
             } catch (Exception e) {
-                ULog.e(NumberActivity.class, "loading data error:" + e.getMessage());
+                ULog.e(PhrasesActivity.class, "loading data error:" + e.getMessage());
                 e.printStackTrace();
                 return null;
             }
@@ -210,7 +221,7 @@ public class PhrasesActivity extends BaseActivity implements OnClickListener {
                 progressDialog.dismiss();
             }
             if (lstData != null && lstData.size() > 0) {
-                ULog.i(PhrasesActivity.this, "image:" + lstData.get(0).getImg() + "; size:" + lstData.size());
+                ULog.i(PhrasesActivity.this, "load data size:" + lstData.size());
                 adapter = new PhrasesAdapter(PhrasesActivity.this, lstData);
                 lstPhrases.setAdapter(adapter);
             } else

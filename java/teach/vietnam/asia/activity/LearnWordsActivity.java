@@ -11,14 +11,11 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.Locale;
 
+import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.query.QueryBuilder;
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.adapter.LearnWordAdapter;
-import teach.vietnam.asia.entity.DaoMaster;
-import teach.vietnam.asia.entity.tblViet;
-import teach.vietnam.asia.entity.tblVietDao;
 import teach.vietnam.asia.sound.AudioPlayer;
 import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.ULog;
@@ -26,18 +23,14 @@ import teach.vietnam.asia.utils.Utility;
 
 public class LearnWordsActivity extends BaseActivity implements OnClickListener {
 
-    private LearnWordAdapter adapter;
-    private tblVietDao dao;
     private GridView gridWord;
     private TextView tvViet;
     private TextView tvOther;
 
-    private DaoMaster daoMaster;
     private ProgressDialog progressDialog;
     private AudioPlayer audio;
     private int kind = 1;
-    private int kind2 = -1;
-    private List<tblViet> lstData;
+    private List lstData;
 
     @Override
     protected int getViewLayoutId() {
@@ -51,7 +44,6 @@ public class LearnWordsActivity extends BaseActivity implements OnClickListener 
         tvOther = getViewChild(R.id.tvOther);
         setListenerView(R.id.btnSpeak, this);
         setInitData();
-        new LoadData().execute();
     }
 
     @Override
@@ -79,33 +71,22 @@ public class LearnWordsActivity extends BaseActivity implements OnClickListener 
     @Override
     protected void onResume() {
         super.onResume();
+//        String tmp;
+//        tmp = LearnWordsActivity.this.getString(R.string.language);
+//        if (lang.equals("") || !lang.equals(tmp)) {
+//            lang = tmp;
+//            new LoadData().execute();
+//        }
+    }
+
+    @Override
+    protected void reloadData() {
+        new LoadData().execute();
     }
 
     private void speakWord() {
         audio.speakWord(tvViet.getText().toString());
     }
-
-//	private void speakWord(String strNumber) {
-//		int count = 0;
-//		String soundName;
-//
-//		if (strNumber.equals(""))
-//			return;
-//
-//		String[] strSound = strNumber.split(" ");
-//
-//		for (String name : strSound) {
-//			soundName = Common.getNameSound(name);
-//			ULog.i(NumberActivity.class, "speakNumber" + soundName);
-//			if (!soundName.equals(""))
-//				strSound[count] = "sound/" + soundName + ".mp3";
-//			count++;
-//		}
-//		ULog.i(NumberActivity.class, "audioAll:" + strSound);
-//
-//		if (strSound.length > 0)
-//			audio.playSound(strSound);
-//	}
 
     private void setInitData() {
         audio = new AudioPlayer(LearnWordsActivity.this);
@@ -114,16 +95,7 @@ public class LearnWordsActivity extends BaseActivity implements OnClickListener 
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int postion, long arg3) {
-                if (Locale.getDefault().getLanguage().equals("ja")) {
-                    tvViet.setText(lstData.get(postion).getVi());
-                    tvOther.setText(lstData.get(postion).getJa());
-                } else if (Locale.getDefault().getLanguage().equals("ko")) {
-                    tvViet.setText(lstData.get(postion).getVi());
-                    tvOther.setText(lstData.get(postion).getKo());
-                } else {
-                    tvViet.setText(lstData.get(postion).getVi());
-                    tvOther.setText(lstData.get(postion).getEn());
-                }
+                setDefaultText(postion);
                 if (Constant.isPro)
                     speakWord();
                 else
@@ -131,6 +103,11 @@ public class LearnWordsActivity extends BaseActivity implements OnClickListener 
             }
         });
 
+    }
+
+    private void setDefaultText(int postion){
+        tvViet.setText(Utility.getVi(lstData.get(postion), lang));
+        tvOther.setText(Utility.getO1(lstData.get(postion), lang));
     }
 
     private class LoadData extends AsyncTask<Void, Void, Void> {
@@ -151,64 +128,30 @@ public class LearnWordsActivity extends BaseActivity implements OnClickListener 
 
         @Override
         protected Void doInBackground(Void... params) {
-            QueryBuilder<tblViet> qb;
-            String lang;
+            QueryBuilder qb;
+            AbstractDao dao;
             try {
-                daoMaster = ((MyApplication) getApplication()).daoMaster;
-                dao = daoMaster.newSession().getTblVietDao();
+//                daoMaster = ((MyApplication) getApplication()).daoMaster;
+//                dao = daoMaster.newSession().getTblVietDao();
+
+                dao = Utility.getDao(LearnWordsActivity.this, lang);
                 qb = dao.queryBuilder();
-                lang = LearnWordsActivity.this.getString(R.string.language);
-//                if (lang.equals("ja")) {
-//                    qb.where(tblVietDao.Properties.Ja.notEq(""));
-//                }else if (lang.equals("ko")) {
-//                    qb.where(tblVietDao.Properties.Ko.notEq(""));
-//                }else{
-//                    qb.where(tblVietDao.Properties.En.notEq(""));
-//                }
-//
-//                if(kind==12) {
-//                    qb.whereOr(tblVietDao.Properties.Kind.eq(kind), tblVietDao.Properties.Kind.eq(5));
-//                }else{
-//                    qb.where(tblVietDao.Properties.Kind.eq(kind));
-//                }
 
-                if (kind == 12) {
-                    if (lang.equals("ja")) {
-                        qb.where(tblVietDao.Properties.Ja.notEq(""), qb.or(tblVietDao.Properties.Kind.eq(kind),
-                                tblVietDao.Properties.Kind.eq(5)));
-                    } else if (lang.equals("ko")) {
-                        qb.where(tblVietDao.Properties.Ko.notEq(""), qb.or(tblVietDao.Properties.Kind.eq(kind),
-                                tblVietDao.Properties.Kind.eq(5)));
-                    } else {
-                        qb.where(tblVietDao.Properties.En.notEq(""), qb.or(tblVietDao.Properties.Kind.eq(kind),
-                                tblVietDao.Properties.Kind.eq(5)));
-                    }
-                } else if (kind == 1) {
-                    if (lang.equals("ja")) {
-                        qb.where(tblVietDao.Properties.Ja.notEq(""), qb.or(tblVietDao.Properties.Kind.eq(kind),
-                                tblVietDao.Properties.Kind.eq(2)));
-                    } else if (lang.equals("ko")) {
-                        qb.where(tblVietDao.Properties.Ko.notEq(""), qb.or(tblVietDao.Properties.Kind.eq(kind),
-                                tblVietDao.Properties.Kind.eq(2)));
-                    } else {
-                        qb.where(tblVietDao.Properties.En.notEq(""), qb.or(tblVietDao.Properties.Kind.eq(kind),
-                                tblVietDao.Properties.Kind.eq(2)));
-                    }
-                } else {
-                    if (lang.equals("ja")) {
-                        qb.where(tblVietDao.Properties.Ja.notEq(""), tblVietDao.Properties.Kind.eq(kind));
-                    } else if (lang.equals("ko")) {
-                        qb.where(tblVietDao.Properties.Ko.notEq(""), tblVietDao.Properties.Kind.eq(kind));
-                    } else {
-                        qb.where(tblVietDao.Properties.En.notEq(""), tblVietDao.Properties.Kind.eq(kind));
-                    }
+                if (kind == 12)
+                    qb.where(Utility.getO1(lang).notEq(""), qb.or(Utility.getKind(lang).eq(kind),
+                            Utility.getKind(lang).eq(5)));
+                else if (kind == 1)
+                    qb.where(Utility.getO1(lang).notEq(""), qb.or(Utility.getKind(lang).eq(kind),
+                            Utility.getKind(lang).eq(2)));
+                else
+                    qb.where(Utility.getO1(lang).notEq(""), Utility.getKind(lang).eq(kind));
 
-                }
 
                 ULog.i(this, "===data db:" + qb.list().size());
                 lstData = qb.list();
             } catch (Exception e) {
-                ULog.e(LearnWordsActivity.class, "load data error:" + e.getMessage());
+                ULog.e(LearnWordsActivity.class, lang + "; load data error:" + e.getMessage());
+                e.printStackTrace();
                 return null;
             }
             return null;
@@ -217,23 +160,15 @@ public class LearnWordsActivity extends BaseActivity implements OnClickListener 
         @Override
         protected void onPostExecute(Void param) {
             super.onPostExecute(param);
+             LearnWordAdapter adapter;
 
             if (!isFinishing()) {
                 progressDialog.dismiss();
             }
             if (lstData != null && lstData.size() > 0) {
-                adapter = new LearnWordAdapter(LearnWordsActivity.this, lstData);
+                adapter = new LearnWordAdapter(LearnWordsActivity.this, lstData, lang);
                 gridWord.setAdapter(adapter);
-                if (Locale.getDefault().getLanguage().equals("ja")) {
-                    tvViet.setText(lstData.get(0).getVi());
-                    tvOther.setText(lstData.get(0).getJa());
-                } else if (Locale.getDefault().getLanguage().equals("ko")) {
-                    tvViet.setText(lstData.get(0).getVi());
-                    tvOther.setText(lstData.get(0).getKo());
-                } else {
-                    tvViet.setText(lstData.get(0).getVi());
-                    tvOther.setText(lstData.get(0).getEn());
-                }
+                setDefaultText(0);
             }
         }
 

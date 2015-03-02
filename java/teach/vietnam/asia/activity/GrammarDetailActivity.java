@@ -36,5 +36,10 @@ public class GrammarDetailActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void reloadData() {
+
+    }
+
 
 }

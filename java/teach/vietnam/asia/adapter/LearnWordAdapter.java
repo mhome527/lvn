@@ -1,11 +1,5 @@
 package teach.vietnam.asia.adapter;
 
-import java.util.List;
-
-import teach.vietnam.asia.R;
-import teach.vietnam.asia.entity.tblViet;
-import teach.vietnam.asia.utils.ULog;
-import teach.vietnam.asia.utils.Utility;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.util.DisplayMetrics;
@@ -19,18 +13,26 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.List;
+
+import teach.vietnam.asia.R;
+import teach.vietnam.asia.utils.ULog;
+import teach.vietnam.asia.utils.Utility;
+
 public class LearnWordAdapter extends BaseAdapter {
 
 	private Activity activity;
 	private int widthScreen;
 	private int heightScreen;
 
-	private List<tblViet> arrViet;
+	private List lstData;
 	private LayoutInflater layoutInflater;
+    private String lang;
 
-	public LearnWordAdapter(Activity activity, List<tblViet> arrViet) {
+	public LearnWordAdapter(Activity activity, List lstData, String lang) {
 		this.activity = activity;
-		this.arrViet = arrViet;
+		this.lstData = lstData;
+        this.lang = lang;
 		layoutInflater = LayoutInflater.from(activity);
 
 		DisplayMetrics metrics = new DisplayMetrics();
@@ -43,7 +45,7 @@ public class LearnWordAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return arrViet.size();
+		return lstData.size();
 	}
 
 	public Object getItem(int position) {
@@ -75,12 +77,17 @@ public class LearnWordAdapter extends BaseAdapter {
 			// param.height = heightScreen;
 
 			viewHolder.llWord.setLayoutParams(new GridView.LayoutParams(LayoutParams.MATCH_PARENT, heightScreen));
-			viewHolder.tvName.setText(arrViet.get(index).getVi());
-			resourceId = Utility.getResourcesID(activity, arrViet.get(index).getImg());
+
+
+            viewHolder.tvName.setText(Utility.getVi(lstData.get(index), lang));
+            resourceId = Utility.getResourcesID(activity, Utility.getImg(lstData.get(index), lang));
+
+//            viewHolder.tvName.setText(arrViet.get(index).getVi());
+//			resourceId = Utility.getResourcesID(activity, arrViet.get(index).getImg());
 			if (resourceId > 0) {
 				viewHolder.imgWord.setImageResource(resourceId);
 			} else
-				ULog.i(LearnWordAdapter.class, "getView image not found: " + arrViet.get(index).getImg());
+				ULog.i(LearnWordAdapter.class, "getView image not found ");
 
 		} catch (Exception e) {
 			ULog.e(this, "number error:" + e.getMessage());
@@ -93,4 +100,6 @@ public class LearnWordAdapter extends BaseAdapter {
 		TextView tvName;
 		ImageView imgWord;
 	}
+
+
 }

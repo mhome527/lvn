@@ -73,6 +73,11 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
         }
     }
 
+    @Override
+    protected void reloadData() {
+
+    }
+
 //    @Override
 //    public void onClick(View v) {
 //

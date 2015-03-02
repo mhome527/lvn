@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -37,9 +38,26 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+import de.greenrobot.dao.AbstractDao;
+import de.greenrobot.dao.Property;
 import teach.vietnam.asia.BuildConfig;
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.activity.MyApplication;
+import teach.vietnam.asia.entity.DaoMaster;
+import teach.vietnam.asia.entity.tblVietEN;
+import teach.vietnam.asia.entity.tblVietENDao;
+import teach.vietnam.asia.entity.tblVietES;
+import teach.vietnam.asia.entity.tblVietESDao;
+import teach.vietnam.asia.entity.tblVietFR;
+import teach.vietnam.asia.entity.tblVietFRDao;
+import teach.vietnam.asia.entity.tblVietIT;
+import teach.vietnam.asia.entity.tblVietITDao;
+import teach.vietnam.asia.entity.tblVietJA;
+import teach.vietnam.asia.entity.tblVietJADao;
+import teach.vietnam.asia.entity.tblVietKO;
+import teach.vietnam.asia.entity.tblVietKODao;
+import teach.vietnam.asia.entity.tblVietRU;
+import teach.vietnam.asia.entity.tblVietRUDao;
 
 public class Utility {
     public static int parseInt(final String num) {
@@ -197,49 +215,49 @@ public class Utility {
         return false;
     }
 
-    public static void showDialogGPS(final Activity context) {
-        // DisplayMetrics displaymetrics = new DisplayMetrics();
-        // getActivity().getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        // int width = (int) (displaymetrics.widthPixels * 0.94);
-        // int height = (int) (displaymetrics.heightPixels * 0.77);
-        //
-        // WindowManager.LayoutParams params = getActivity().getWindow().getAttributes();
-        // params.width = width;
-        // params.height = height;
-        // getActivity().getWindow().setAttributes(params);
-
-        final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_gps);
-
-        dialog.show();
-        dialog.setCanceledOnTouchOutside(false);
-        // LinearLayout lnNotice = (LinearLayout)dialog.findViewById(R.id.lnNotice);
-        TextView tvMsg = (TextView) dialog.findViewById(R.id.tvMsg);
-        Button btnSettings = (Button) dialog.findViewById(R.id.btnSettings);
-        Button btnCancel = (Button) dialog.findViewById(R.id.btnCancel);
-
-        //
-        // lnNotice.getLayoutParams().width = width;
-        // lnNotice.getLayoutParams().height = height;
-        tvMsg.setText(String.format(context.getString(R.string.msg_alert_gps), context.getString(R.string.app_name)));
-        btnSettings.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                dialog.dismiss();
-                Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                context.startActivity(gpsIntent);
-            }
-        });
-
-        btnCancel.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                dialog.dismiss();
-            }
-        });
-
-    }
+//    public static void showDialogGPS(final Activity context) {
+//        // DisplayMetrics displaymetrics = new DisplayMetrics();
+//        // getActivity().getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+//        // int width = (int) (displaymetrics.widthPixels * 0.94);
+//        // int height = (int) (displaymetrics.heightPixels * 0.77);
+//        //
+//        // WindowManager.LayoutParams params = getActivity().getWindow().getAttributes();
+//        // params.width = width;
+//        // params.height = height;
+//        // getActivity().getWindow().setAttributes(params);
+//
+//        final Dialog dialog = new Dialog(context);
+//        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        dialog.setContentView(R.layout.dialog_gps);
+//
+//        dialog.show();
+//        dialog.setCanceledOnTouchOutside(false);
+//        // LinearLayout lnNotice = (LinearLayout)dialog.findViewById(R.id.lnNotice);
+//        TextView tvMsg = (TextView) dialog.findViewById(R.id.tvMsg);
+//        Button btnSettings = (Button) dialog.findViewById(R.id.btnSettings);
+//        Button btnCancel = (Button) dialog.findViewById(R.id.btnCancel);
+//
+//        //
+//        // lnNotice.getLayoutParams().width = width;
+//        // lnNotice.getLayoutParams().height = height;
+//        tvMsg.setText(String.format(context.getString(R.string.msg_alert_gps), context.getString(R.string.app_name)));
+//        btnSettings.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View arg0) {
+//                dialog.dismiss();
+//                Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+//                context.startActivity(gpsIntent);
+//            }
+//        });
+//
+//        btnCancel.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View arg0) {
+//                dialog.dismiss();
+//            }
+//        });
+//
+//    }
 
     public static int getResourcesID(Context context, String name) {
         try {
@@ -477,74 +495,316 @@ public class Utility {
         }
     }
 
+//    public static String getFileNameData(Context context) {
+//        String filename = "";
+//        String lang;
+//        lang = context.getString(R.string.language);
+//        if(lang.equals())
+//
+//        return filename;
+//    }
 
-    // public static void writeGAToSDFile(String filename, String data) {
-    // String pathfile;
-    // String aDataRow = "";
-    // String aBuffer = "";
-    //
-    // try {
-    //
-    // pathfile = android.os.Environment.getExternalStorageDirectory() +"";
-    // ULog.i("Common", "writeGAToSDFile Path file: " + pathfile);
-    // File dir = new File(pathfile, Constant.INFO_BUS);
-    // if (!dir.exists()) {
-    // dir.mkdirs();
-    // }
-    //
-    // File f = new File(dir + File.separator + filename);
-    // //read file
-    // if(f.exists()){
-    // FileInputStream fIn = new FileInputStream(f);
-    // BufferedReader myReader = new BufferedReader(
-    // new InputStreamReader(fIn));
-    //
-    // while ((aDataRow = myReader.readLine()) != null) {
-    // aBuffer += aDataRow + "\n";
-    // }
-    // myReader.close();
-    // }
-    // ////
-    //
-    // FileOutputStream fOut = new FileOutputStream(f);
-    // OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
-    // // myOutWriter.append(data);
-    // myOutWriter.write(aBuffer + data);
-    // myOutWriter.close();
-    // fOut.close();
-    // } catch (FileNotFoundException e) {
-    // e.printStackTrace();
-    // ULog.e("Common", "FileNotFoundException Error:" + e.getMessage());
-    //
-    // } catch (Exception e) {
-    // if (BuildConfig.DEBUG)
-    // e.printStackTrace();
-    // ULog.e("Common", "Exception Error:" + e.getMessage());
-    // }
-    //
-    // }
-    //
-    // public static void deleteLogGAToSDFile(String filename) {
-    // String pathfile;
-    //
-    // try {
-    //
-    // pathfile = android.os.Environment.getExternalStorageDirectory() +"";
-    // ULog.i("Common", "deleteLogGAToSDFile Path file: " + pathfile);
-    // File dir = new File(pathfile, ConstanstKey.LOG_FOLDER_NAME);
-    // if (!dir.exists()) {
-    // dir.mkdirs();
-    // }
-    //
-    // File f = new File(dir + File.separator + filename);
-    //
-    // if(f.exists()){
-    // f.delete();
-    // }
-    // } catch (Exception e) {
-    // if (BuildConfig.DEBUG)
-    // e.printStackTrace();
-    // ULog.e("Common", "Exception Error:" + e.getMessage());
-    // }
-    // }
+    public static AbstractDao getDao(Context context, String lang) {
+        AbstractDao dao;
+        DaoMaster daoMaster = ((MyApplication) context.getApplicationContext()).daoMaster;
+//        daoMaster = ((MyApplication) activity.getApplicationContext()).daoMaster;
+
+
+        if (lang.equals("ja"))
+            dao = daoMaster.newSession().getTblVietJADao();
+        else if (lang.equals("ko"))
+            dao = daoMaster.newSession().getTblVietKODao();
+        else if (lang.equals("ru"))
+            dao = daoMaster.newSession().getTblVietRUDao();
+        else if (lang.equals("fr"))
+            dao = daoMaster.newSession().getTblVietFRDao();
+        else if (lang.equals("it"))
+            dao = daoMaster.newSession().getTblVietITDao();
+        else if (lang.equals("es"))
+            dao = daoMaster.newSession().getTblVietESDao();
+        else
+            dao = daoMaster.newSession().getTblVietENDao();
+        return dao;
+    }
+
+    public static String getTableName(String lang) {
+        Property p;
+        if (lang.equals("ja"))
+            return tblVietJADao.TABLENAME;
+        else if (lang.equals("ko"))
+            return tblVietKODao.TABLENAME;
+        else if (lang.equals("ru"))
+            return tblVietRUDao.TABLENAME;
+        else if (lang.equals("fr"))
+            return tblVietFRDao.TABLENAME;
+        else if (lang.equals("it"))
+            return tblVietITDao.TABLENAME;
+        else if (lang.equals("es"))
+            return tblVietESDao.TABLENAME;
+        else
+            return tblVietENDao.TABLENAME;
+    }
+
+    public static Property getO1(String lang) {
+        Property p;
+        if (lang.equals("ja"))
+            p = tblVietJADao.Properties.O1;
+        else if (lang.equals("ko"))
+            p = tblVietKODao.Properties.O1;
+        else if (lang.equals("ru"))
+            p = tblVietRUDao.Properties.O1;
+        else if (lang.equals("fr"))
+            p = tblVietFRDao.Properties.O1;
+        else if (lang.equals("it"))
+            p = tblVietITDao.Properties.O1;
+        else if (lang.equals("es"))
+            p = tblVietESDao.Properties.O1;
+        else
+            p = tblVietENDao.Properties.O1;
+        return p;
+    }
+
+    public static Property getO2(String lang) {
+        Property p;
+        if (lang.equals("ja"))
+            p = tblVietJADao.Properties.O2;
+        else if (lang.equals("ko"))
+            p = tblVietKODao.Properties.O2;
+        else if (lang.equals("ru"))
+            p = tblVietRUDao.Properties.O2;
+        else if (lang.equals("fr"))
+            p = tblVietFRDao.Properties.O2;
+        else if (lang.equals("it"))
+            p = tblVietITDao.Properties.O2;
+        else if (lang.equals("es"))
+            p = tblVietESDao.Properties.O2;
+        else
+            p = tblVietENDao.Properties.O2;
+        return p;
+    }
+
+    public static Property getKind(String lang) {
+        Property p;
+        if (lang.equals("ja"))
+            p = tblVietJADao.Properties.Kind;
+        else if (lang.equals("ko"))
+            p = tblVietKODao.Properties.Kind;
+        else if (lang.equals("ru"))
+            p = tblVietRUDao.Properties.Kind;
+        else if (lang.equals("fr"))
+            p = tblVietFRDao.Properties.Kind;
+        else if (lang.equals("it"))
+            p = tblVietITDao.Properties.Kind;
+        else if (lang.equals("es"))
+            p = tblVietESDao.Properties.Kind;
+        else
+            p = tblVietENDao.Properties.Kind;
+        return p;
+    }
+
+    public static Property getLevel(String lang) {
+        Property p;
+        if (lang.equals("ja"))
+            p = tblVietJADao.Properties.Level;
+        else if (lang.equals("ko"))
+            p = tblVietKODao.Properties.Level;
+        else if (lang.equals("ru"))
+            p = tblVietRUDao.Properties.Level;
+        else if (lang.equals("fr"))
+            p = tblVietFRDao.Properties.Level;
+        else if (lang.equals("it"))
+            p = tblVietITDao.Properties.Level;
+        else if (lang.equals("es"))
+            p = tblVietESDao.Properties.Level;
+        else
+            p = tblVietENDao.Properties.Level;
+        return p;
+    }
+
+    /**
+     * get filename by language
+     *
+     * @param lang
+     * @return
+     */
+    public static String getFileNameDB(String lang) {
+
+        if (lang.equals("ja"))
+            return Constant.FILE_JA;
+        else if (lang.equals("ko"))
+            return Constant.FILE_KO;
+        else if (lang.equals("ru"))
+            return Constant.FILE_RU;
+        else if (lang.equals("fr"))
+            return Constant.FILE_FR;
+        else if (lang.equals("it"))
+            return Constant.FILE_IT;
+        else if (lang.equals("es"))
+            return Constant.FILE_ES;
+        else
+            return Constant.FILE_EN;
+    }
+
+    public static void deleteTableLang(String lang, SQLiteDatabase db) {
+        if (lang.equals("ja"))
+            tblVietJADao.dropTable(db, true);
+        else if (lang.equals("ko"))
+            tblVietKODao.dropTable(db, true);
+        else if (lang.equals("ru"))
+            tblVietRUDao.dropTable(db, true);
+        else if (lang.equals("fr"))
+            tblVietFRDao.dropTable(db, true);
+        else if (lang.equals("it"))
+            tblVietITDao.dropTable(db, true);
+        else if (lang.equals("es"))
+            tblVietESDao.dropTable(db, true);
+        else
+            tblVietENDao.dropTable(db, true);
+    }
+
+    public static void CreateTableLang(String lang, SQLiteDatabase db) {
+        if (lang.equals("ja"))
+            tblVietJADao.createTable(db, true);
+        else if (lang.equals("ko"))
+            tblVietKODao.createTable(db, true);
+        else if (lang.equals("ru"))
+            tblVietRUDao.createTable(db, true);
+        else if (lang.equals("fr"))
+            tblVietFRDao.createTable(db, true);
+        else if (lang.equals("it"))
+            tblVietITDao.createTable(db, true);
+        else if (lang.equals("es"))
+            tblVietESDao.createTable(db, true);
+        else
+            tblVietENDao.createTable(db, true);
+    }
+
+
+    public static String getImg(Object entity, String lang) {
+        if (lang.equals(Constant.JA))
+            return ((tblVietJA) entity).getImg();
+        else if (lang.equals(Constant.KO))
+            return ((tblVietKO) entity).getImg();
+        else if (lang.equals(Constant.FR))
+            return ((tblVietFR) entity).getImg();
+        else if (lang.equals(Constant.RU))
+            return ((tblVietRU) entity).getImg();
+        else if (lang.equals(Constant.IT))
+            return ((tblVietIT) entity).getImg();
+        else if (lang.equals(Constant.ES))
+            return ((tblVietES) entity).getImg();
+        else
+            return ((tblVietEN) entity).getImg();
+    }
+
+    public static String getVi(Object entity, String lang) {
+        if (lang.equals(Constant.JA))
+            return ((tblVietJA) entity).getVi();
+        else if (lang.equals(Constant.KO))
+            return ((tblVietKO) entity).getVi();
+        else if (lang.equals(Constant.FR))
+            return ((tblVietFR) entity).getVi();
+        else if (lang.equals(Constant.RU))
+            return ((tblVietRU) entity).getVi();
+        else if (lang.equals(Constant.IT))
+            return ((tblVietIT) entity).getVi();
+        else if (lang.equals(Constant.ES))
+            return ((tblVietES) entity).getVi();
+        else
+            return ((tblVietEN) entity).getVi();
+    }
+
+    public static String getO1(Object entity, String lang) {
+        if (lang.equals(Constant.JA))
+            return ((tblVietJA) entity).getO1();
+        else if (lang.equals(Constant.KO))
+            return ((tblVietKO) entity).getO1();
+        else if (lang.equals(Constant.FR))
+            return ((tblVietFR) entity).getO1();
+        else if (lang.equals(Constant.RU))
+            return ((tblVietRU) entity).getO1();
+        else if (lang.equals(Constant.IT))
+            return ((tblVietIT) entity).getO1();
+        else if (lang.equals(Constant.ES))
+            return ((tblVietES) entity).getO1();
+        else
+            return ((tblVietEN) entity).getO1();
+    }
+
+    public static String getO2(Object entity, String lang) {
+        if (lang.equals(Constant.JA))
+            return ((tblVietJA) entity).getO2();
+        else if (lang.equals(Constant.KO))
+            return ((tblVietKO) entity).getO2();
+        else if (lang.equals(Constant.FR))
+            return ((tblVietFR) entity).getO2();
+        else if (lang.equals(Constant.RU))
+            return ((tblVietRU) entity).getO2();
+        else if (lang.equals(Constant.IT))
+            return ((tblVietIT) entity).getO2();
+        else if (lang.equals(Constant.ES))
+            return ((tblVietES) entity).getO2();
+        else
+            return ((tblVietEN) entity).getO2();
+    }
+
+    public static String getDefaultWord(Object entity, String lang) {
+        if (lang.equals(Constant.JA))
+            return ((tblVietJA) entity).getDefault_word();
+        else if (lang.equals(Constant.KO))
+            return ((tblVietKO) entity).getDefault_word();
+        else if (lang.equals(Constant.FR))
+            return ((tblVietFR) entity).getDefault_word();
+        else if (lang.equals(Constant.RU))
+            return ((tblVietRU) entity).getDefault_word();
+        else if (lang.equals(Constant.IT))
+            return ((tblVietIT) entity).getDefault_word();
+        else if (lang.equals(Constant.ES))
+            return ((tblVietES) entity).getDefault_word();
+        else
+            return ((tblVietEN) entity).getDefault_word();
+    }
+
+    //(String vi, Integer kind, String img, String o1, String o2, Integer level, String default_word)
+    public static Object getDataObject(String lang, String vi, String o1) {
+        if (lang.equals(Constant.JA))
+            return new tblVietJA(vi, 0, "", o1, "", 0, "");
+        else if (lang.equals(Constant.KO))
+            return new tblVietKO(vi, 0, "", o1, "", 0, "");
+        else if (lang.equals(Constant.FR))
+            return new tblVietFR(vi, 0, "", o1, "", 0, "");
+        else if (lang.equals(Constant.RU))
+            return new tblVietRU(vi, 0, "", o1, "", 0, "");
+        else if (lang.equals(Constant.IT))
+            return new tblVietIT(vi, 0, "", o1, "", 0, "");
+        else if (lang.equals(Constant.ES))
+            return new tblVietES(vi, 0, "", o1, "", 0, "");
+        else
+            return new tblVietEN(vi, 0, "", o1, "", 0, "");
+    }
+
+    public static void setDataObject(String lang, Object object, String default_word) {
+        if (lang.equals(Constant.JA)) {
+            tblVietJA vn = (tblVietJA) object;
+            vn.setDefault_word(default_word);
+        } else if (lang.equals(Constant.KO)) {
+            tblVietKO vn = (tblVietKO) object;
+            vn.setDefault_word(default_word);
+        } else if (lang.equals(Constant.FR)) {
+            tblVietFR vn = (tblVietFR) object;
+            vn.setDefault_word(default_word);
+        } else if (lang.equals(Constant.RU)) {
+            tblVietRU vn = (tblVietRU) object;
+            vn.setDefault_word(default_word);
+        } else if (lang.equals(Constant.IT)) {
+            tblVietIT vn = (tblVietIT) object;
+            vn.setDefault_word(default_word);
+        } else if (lang.equals(Constant.ES)) {
+            tblVietES vn = (tblVietES) object;
+            vn.setDefault_word(default_word);
+        } else {
+            tblVietEN vn = (tblVietEN) object;
+            vn.setDefault_word(default_word);
+        }
+    }
 }

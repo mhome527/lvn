@@ -1,12 +1,13 @@
 package teach.vietnam.asia.activity;
 
-import teach.vietnam.asia.R;
-import teach.vietnam.asia.sound.AudioPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+
+import teach.vietnam.asia.R;
+import teach.vietnam.asia.sound.AudioPlayer;
 
 public class BodyActivity extends BaseActivity implements OnClickListener {
 	private Button btnHead;
@@ -182,6 +183,10 @@ public class BodyActivity extends BaseActivity implements OnClickListener {
 		super.onResume();
 	}
 
+    @Override
+    protected void reloadData() {
+
+    }
 	private void speakNumber() {
 		audio.speakWord(tvViet.getText().toString());
 	}

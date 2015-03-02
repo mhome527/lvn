@@ -1,14 +1,5 @@
 package teach.vietnam.asia.activity;
 
-import java.util.ArrayList;
-
-import teach.vietnam.asia.R;
-import teach.vietnam.asia.adapter.NumberAdapter;
-import teach.vietnam.asia.sound.AudioPlayer;
-import teach.vietnam.asia.utils.NumberToWord;
-import teach.vietnam.asia.utils.ULog;
-import teach.vietnam.asia.utils.Utility;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -22,6 +13,15 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+
+import teach.vietnam.asia.R;
+import teach.vietnam.asia.adapter.NumberAdapter;
+import teach.vietnam.asia.sound.AudioPlayer;
+import teach.vietnam.asia.utils.NumberToWord;
+import teach.vietnam.asia.utils.ULog;
+import teach.vietnam.asia.utils.Utility;
 
 public class NumberActivity extends BaseActivity implements OnClickListener {
     private EditText edtNumber;
@@ -46,6 +46,11 @@ public class NumberActivity extends BaseActivity implements OnClickListener {
 
         initData();
         // new LoadData().execute();
+    }
+
+    @Override
+    protected void reloadData() {
+
     }
 
     @Override

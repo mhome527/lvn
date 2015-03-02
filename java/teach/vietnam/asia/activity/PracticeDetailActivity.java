@@ -16,26 +16,27 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.query.QueryBuilder;
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.adapter.PracticeFooterAdapter;
 import teach.vietnam.asia.adapter.PracticePagerAdapter;
 import teach.vietnam.asia.entity.DaoMaster;
 import teach.vietnam.asia.entity.DaoSession;
-import teach.vietnam.asia.entity.tblViet;
-import teach.vietnam.asia.entity.tblVietDao;
+import teach.vietnam.asia.entity.tblVietENDao;
 import teach.vietnam.asia.sound.AudioPlayer;
 import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.ULog;
+import teach.vietnam.asia.utils.Utility;
 
 public class PracticeDetailActivity extends BaseActivity implements OnClickListener {
 
+    public TextView tvAns;
     private ViewPager pagerExceriese;
     private GridView gridPage;
-    public TextView tvAns;
     private PracticePagerAdapter adapterPage;
     private PracticeFooterAdapter adapterFooter;
-    private tblVietDao dao;
+    private tblVietENDao dao;
     private DaoMaster daoMaster;
     private ProgressDialog progressDialog;
     private AudioPlayer audio;
@@ -43,7 +44,7 @@ public class PracticeDetailActivity extends BaseActivity implements OnClickListe
     private int kind = 1;
     private int level = 1;
     private int max_level = 1;
-    private String lang;
+//    private String lang;
 
     @Override
     protected int getViewLayoutId() {
@@ -59,16 +60,18 @@ public class PracticeDetailActivity extends BaseActivity implements OnClickListe
         tvAns.setVisibility(View.INVISIBLE);
 
         setListenerView(R.id.imgSpeak, this);
-        setInitData();
+//        setInitData();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.imgSpeak:
-                ULog.i(PracticeDetailActivity.class, "onClick" + adapterPage.lstData.get(currPage).getVi());
-                // audio.playSound(adapterPage.lstData.get(currPage).getAudio());
-                audio.speakWord(adapterPage.lstData.get(currPage).getVi());
+//                ULog.i(PracticeDetailActivity.class, "onClick" + adapterPage.lstData.get(currPage).getVi());
+                if (Constant.isPro)
+                    audio.speakWord(Utility.getVi(adapterPage.lstData.get(currPage), lang));
+                else
+                    Utility.installPremiumApp(PracticeDetailActivity.this);
                 break;
         }
         super.onClick(v);
@@ -82,9 +85,21 @@ public class PracticeDetailActivity extends BaseActivity implements OnClickListe
             audio.stopAll();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        lang = PracticeDetailActivity.this.getString(R.string.language);
+        setInitData();
+    }
+
+    @Override
+    protected void reloadData() {
+
+    }
+
     private void setInitData() {
         kind = getIntent().getIntExtra(Constant.INTENT_KIND, 1);
-        lang = PracticeDetailActivity.this.getString(R.string.language);
+
         ULog.i(PracticeDetailActivity.class, "setInitData kind:" + kind);
         audio = new AudioPlayer(PracticeDetailActivity.this);
         pagerExceriese.setPageMargin(-80);
@@ -93,13 +108,13 @@ public class PracticeDetailActivity extends BaseActivity implements OnClickListe
             @Override
             public void onPageSelected(int position) {
                 currPage = position;
-                ULog.i(PracticeDetailActivity.class, "PageSelected Word:" + adapterPage.lstData.get(currPage).getVi());
+//                ULog.i(PracticeDetailActivity.class, "PageSelected Word:" + adapterPage.lstData.get(currPage).getVi());
 
                 if (Constant.isPro) {
-                    audio.speakWord(adapterPage.lstData.get(currPage).getVi());
+                    audio.speakWord(Utility.getVi(adapterPage.lstData.get(currPage), lang));
                     tvAns.setVisibility(View.INVISIBLE);
                 } else {
-                    tvAns.setText(adapterPage.lstData.get(currPage).getVi());
+                    tvAns.setText(Utility.getVi(adapterPage.lstData.get(currPage), lang));
                     tvAns.setVisibility(View.VISIBLE);
                 }
             }
@@ -125,6 +140,7 @@ public class PracticeDetailActivity extends BaseActivity implements OnClickListe
                 adapterFooter.currentPage = position;
                 adapterFooter.notifyDataSetChanged();
                 level = position + 1;
+                tvAns.setText("");
                 new LoadData().execute();
             }
         });
@@ -132,7 +148,26 @@ public class PracticeDetailActivity extends BaseActivity implements OnClickListe
         new LoadLevel().execute();
     }
 
-    private class LoadData extends AsyncTask<Void, Void, List<tblViet>> {
+    public int getMaxLevel(DaoSession session) {
+        String cond;
+
+        // lstNumberEx = new ArrayList<TblNumberEx>();
+        cond = "SELECT MAX(level) FROM  " + Utility.getTableName(lang) + " WHERE " + Utility.getKind(lang).columnName + "=" + kind;
+
+        try {
+            Cursor c = session.getDatabase().rawQuery(cond, null);
+            if (c.moveToFirst()) {
+                level = c.getInt(0);
+                ULog.i(PracticeDetailActivity.class, "getLevel max level:" + level);
+            }
+            c.close();
+        } catch (Exception e) {
+            ULog.e(PracticeDetailActivity.class, "getListNumber Error:" + e.getMessage());
+        }
+        return level;
+    }
+
+    private class LoadData extends AsyncTask<Void, Void, List> {
 
         @Override
         protected void onPreExecute() {
@@ -149,24 +184,15 @@ public class PracticeDetailActivity extends BaseActivity implements OnClickListe
         }
 
         @Override
-        protected List<tblViet> doInBackground(Void... params) {
-            QueryBuilder<tblViet> qb;
-
+        protected List doInBackground(Void... params) {
+            QueryBuilder qb;
+            AbstractDao dao;
             try {
 
-
-                daoMaster = ((MyApplication) getApplication()).daoMaster;
-                dao = daoMaster.newSession().getTblVietDao();
+                dao = Utility.getDao(PracticeDetailActivity.this, lang);
                 qb = dao.queryBuilder();
-//                qb.where(tblVietDao.Properties.Kind.eq(kind), tblVietDao.Properties.Level.eq(level));
-                if (lang.equals("ja")) {
-                    qb.where(tblVietDao.Properties.Kind.eq(kind), tblVietDao.Properties.Level.eq(level), tblVietDao.Properties.Ja.notEq(""));
-                }else if (lang.equals("ko")) {
-                    qb.where(tblVietDao.Properties.Kind.eq(kind), tblVietDao.Properties.Level.eq(level), tblVietDao.Properties.Ko.notEq(""));
-                }else{
-                    qb.where(tblVietDao.Properties.Kind.eq(kind), tblVietDao.Properties.Level.eq(level),tblVietDao.Properties.En.notEq(""));
-                }
-                qb.orderAsc(tblVietDao.Properties.Level);
+                qb.where(Utility.getKind(lang).eq(kind), Utility.getLevel(lang).eq(level), Utility.getO1(lang).notEq(""));
+                qb.orderAsc(Utility.getLevel(lang));
                 ULog.i(this, "===data db:" + qb.list().size());
 
             } catch (Exception e) {
@@ -177,16 +203,18 @@ public class PracticeDetailActivity extends BaseActivity implements OnClickListe
         }
 
         @Override
-        protected void onPostExecute(List<tblViet> lstData) {
+        protected void onPostExecute(List lstData) {
             super.onPostExecute(lstData);
             try {
                 if (!isFinishing()) {
                     progressDialog.dismiss();
                 }
                 if (lstData != null && lstData.size() > 0) {
-                    ULog.i(PracticeDetailActivity.this, "image:" + lstData.get(0).getImg() + "; size:" + lstData.size());
-                    adapterPage = new PracticePagerAdapter(PracticeDetailActivity.this, lstData);
+//                    ULog.i(PracticeDetailActivity.this, "image:" + lstData.get(0).getImg() + "; size:" + lstData.size());
+                    adapterPage = new PracticePagerAdapter(PracticeDetailActivity.this, lstData, lang);
                     pagerExceriese.setAdapter(adapterPage);
+                    if (!Constant.isPro)
+                        tvAns.setText(Utility.getVi(adapterPage.lstData.get(0), lang));
                 }
             } catch (Exception e) {
                 ULog.e(PracticeDetailActivity.class, "onPostExecute Error: " + e.getMessage());
@@ -236,25 +264,6 @@ public class PracticeDetailActivity extends BaseActivity implements OnClickListe
             }
         }
 
-    }
-
-    public int getMaxLevel(DaoSession session) {
-        String cond;
-
-        // lstNumberEx = new ArrayList<TblNumberEx>();
-        cond = "SELECT MAX(level) FROM  " + tblVietDao.TABLENAME + " WHERE " + tblVietDao.Properties.Kind.columnName + "=" + kind;
-
-        try {
-            Cursor c = session.getDatabase().rawQuery(cond, null);
-            if (c.moveToFirst()) {
-                level = c.getInt(0);
-                ULog.i(PracticeDetailActivity.class, "getLevel max level:" + level);
-            }
-            c.close();
-        } catch (Exception e) {
-            ULog.e(PracticeDetailActivity.class, "getListNumber Error:" + e.getMessage());
-        }
-        return level;
     }
 
 }

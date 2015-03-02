@@ -1,11 +1,12 @@
 package teach.vietnam.asia.activity;
 
-import teach.vietnam.asia.R;
-import teach.vietnam.asia.utils.Constant;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+
+import teach.vietnam.asia.R;
+import teach.vietnam.asia.utils.Constant;
 
 public class PracticeActivity extends BaseActivity implements OnClickListener {
 
@@ -19,7 +20,12 @@ public class PracticeActivity extends BaseActivity implements OnClickListener {
 		setInitData();
 	}
 
-	@Override
+    @Override
+    protected void reloadData() {
+
+    }
+
+    @Override
 	public void onClick(View v) {
 		Intent i;
 		switch (v.getId()) {

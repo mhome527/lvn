@@ -22,8 +22,9 @@ import teach.vietnam.asia.utils.ULog;
 import teach.vietnam.asia.utils.Utility;
 
 public abstract class BaseActivity extends Activity implements OnClickListener {
-    private String tag = BaseActivity.class.getSimpleName();
     public static Prefs pref;
+    public String lang = "en";
+    private String tag = BaseActivity.class.getSimpleName();
     private View viewMain;
     private RelativeLayout rlHome;
     private boolean isClick = false;
@@ -33,6 +34,8 @@ public abstract class BaseActivity extends Activity implements OnClickListener {
     protected abstract int getViewLayoutId();
 
     protected abstract void initView(final Bundle savedInstanceState);
+
+    protected abstract void reloadData();
 
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
@@ -92,8 +95,6 @@ public abstract class BaseActivity extends Activity implements OnClickListener {
 
             // setAction();
 
-            // GA
-            Utility.setScreenNameGA(this.getClass().getSimpleName());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -113,6 +114,16 @@ public abstract class BaseActivity extends Activity implements OnClickListener {
             theme = pref.getIntValue(0, Constant.PREF_BG_THEME);
             changeThemeBG();
         }
+
+        String tmp;
+        tmp = this.getString(R.string.language);
+        if (lang.equals("") || !lang.equals(tmp)) {
+            lang = tmp;
+            reloadData();
+        }
+        // GA
+        Utility.setScreenNameGA(this.getClass().getSimpleName() + " - lang:" + lang);
+
     }
 
     @Override

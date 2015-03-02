@@ -57,6 +57,11 @@ public class AlphabetActivity extends BaseActivity implements OnClickListener {
         super.onResume();
     }
 
+    @Override
+    protected void reloadData() {
+
+    }
+
     private void initData() {
         arrAlphabet = getResources().getStringArray(R.array.alphabet);
         lstData = new ArrayList<TblAlphabetEx>();

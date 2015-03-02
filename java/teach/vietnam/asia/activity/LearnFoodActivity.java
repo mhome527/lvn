@@ -17,13 +17,10 @@ import android.widget.ViewSwitcher.ViewFactory;
 
 import java.util.List;
 
+import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.query.QueryBuilder;
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.adapter.LearnFoodAdapter;
-import teach.vietnam.asia.adapter.LearnPagerAdapter;
-import teach.vietnam.asia.entity.DaoMaster;
-import teach.vietnam.asia.entity.tblViet;
-import teach.vietnam.asia.entity.tblVietDao;
 import teach.vietnam.asia.sound.AudioPlayer;
 import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.ULog;
@@ -32,164 +29,188 @@ import teach.vietnam.asia.utils.Utility;
 @SuppressWarnings("deprecation")
 public class LearnFoodActivity extends BaseActivity implements ViewFactory, OnClickListener {
 
-	private Gallery gallery;
-	private ImageSwitcher selectedImage;
-	private tblVietDao dao;
-	// private ImageButton imgVolume;
+    private Gallery gallery;
+    private ImageSwitcher selectedImage;
+//	private tblVietDao dao;
+    // private ImageButton imgVolume;
 
-	private DaoMaster daoMaster;
-	private ProgressDialog progressDialog;
-	private AudioPlayer audio;
-	private TextView tvFood;
-	private List<tblViet> lstData;
+    //	private DaoMaster daoMaster;
+    private ProgressDialog progressDialog;
+    private AudioPlayer audio;
+    private TextView tvFood;
+    private List lstData;
+    private String lang = "";
 
-	@Override
-	protected int getViewLayoutId() {
-		return R.layout.learn_food_layout;
-	}
+    @Override
+    protected int getViewLayoutId() {
+        return R.layout.learn_food_layout;
+    }
 
-	@Override
-	protected void initView(Bundle savedInstanceState) {
-		// viewPager = getViewChild(R.id.pagerFruit);
-		gallery = getViewChild(R.id.gallery1);
-		tvFood = getViewChild(R.id.tvFood);
-		setListenerView(R.id.btnSpeak, this);
-		// imgVolume = getViewChild(R.id.imgVolume);
+    @Override
+    protected void initView(Bundle savedInstanceState) {
+        // viewPager = getViewChild(R.id.pagerFruit);
+        gallery = getViewChild(R.id.gallery1);
+        tvFood = getViewChild(R.id.tvFood);
+        setListenerView(R.id.btnSpeak, this);
+        // imgVolume = getViewChild(R.id.imgVolume);
 
-		setInitData();
-		new LoadData().execute();
-	}
+        setInitData();
 
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.btnSpeak:
-			if (Constant.isPro)
-				speakWord();
-			else
-				Utility.installPremiumApp(LearnFoodActivity.this);
-			break;
-		}
-		super.onClick(v);
-	}
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnSpeak:
+                if (Constant.isPro)
+                    speakWord();
+                else
+                    Utility.installPremiumApp(LearnFoodActivity.this);
+                break;
+        }
+        super.onClick(v);
+    }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if(audio !=null)
+        if (audio != null)
             audio.stopAll();
     }
 
     @Override
-	public View makeView() {
-		ImageView iView = new ImageView(this);
-		iView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-		iView.setLayoutParams(new ImageSwitcher.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-		iView.setBackgroundColor(0xFFffffff);
+    protected void onResume() {
+        super.onResume();
 
-		return iView;
-	}
+//        String tmp;
+//        tmp = LearnFoodActivity.this.getString(R.string.language);
+//        if (lang.equals("") || !lang.equals(tmp)) {
+//            lang = tmp;
+//
+//        }
+    }
 
-	private void setInitData() {
-		audio = new AudioPlayer(LearnFoodActivity.this);
-		// imgVolume.setOnClickListener(this);
-		// adapter = new FruitPagerAdapter(this, mImageIds);
-		// viewPager.setAdapter(adapter);
-		// pagerFruit
-		selectedImage = (ImageSwitcher) findViewById(R.id.selectedImage);
-		selectedImage.setFactory(this);
-		selectedImage.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
-		selectedImage.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
+    @Override
+    protected void reloadData() {
+        new LoadData().execute();
+    }
 
-		gallery.setSpacing(5);
-		// gallery.setAdapter(new LearnAdapter(this));
+    @Override
+    public View makeView() {
+        ImageView iView = new ImageView(this);
+        iView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        iView.setLayoutParams(new ImageSwitcher.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        iView.setBackgroundColor(0xFFffffff);
 
-		// clicklistener for Gallery
-		gallery.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				int resourceId = 0;
-				tvFood.setText(lstData.get(position).getVi());
-				// Toast.makeText(FruitActivity.this, "Your selected position = " + position, Toast.LENGTH_SHORT).show();
-				// show the selected Image
-				ImageView img = (ImageView) v.findViewById(R.id.imgFruit);
-				try {
-					resourceId = Integer.parseInt(img.getTag().toString());
+        return iView;
+    }
 
-				} catch (Exception e) {
-					ULog.e(LearnFoodActivity.class, "onItemClick get resource error:" + e.getMessage());
-					resourceId = 0;
-				}
-				if (resourceId > 0) {
-					selectedImage.setImageResource(resourceId);
-				} else
-					ULog.e(LearnPagerAdapter.class, "dont load resource");
+    private void setInitData() {
+        audio = new AudioPlayer(LearnFoodActivity.this);
+        // imgVolume.setOnClickListener(this);
+        // adapter = new FruitPagerAdapter(this, mImageIds);
+        // viewPager.setAdapter(adapter);
+        // pagerFruit
+        selectedImage = (ImageSwitcher) findViewById(R.id.selectedImage);
+        selectedImage.setFactory(this);
+        selectedImage.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
+        selectedImage.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
 
-				if (Constant.isPro)
-					speakWord();
-				// selectedImage.setImageResource(mImageIds[position]);
-			}
-		});
-	}
+        gallery.setSpacing(5);
+        // gallery.setAdapter(new LearnAdapter(this));
 
-	private void speakWord() {
-		audio.speakWord(tvFood.getText().toString().trim());
-	}
+        // clicklistener for Gallery
+        gallery.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                int resourceId = 0;
+                tvFood.setText(Utility.getVi(lstData.get(position), lang));
+                // Toast.makeText(FruitActivity.this, "Your selected position = " + position, Toast.LENGTH_SHORT).show();
+                // show the selected Image
+                ImageView img = (ImageView) v.findViewById(R.id.imgFruit);
+                try {
+                    resourceId = Integer.parseInt(img.getTag().toString());
 
-	private class LoadData extends AsyncTask<Void, Void, Void> {
+                } catch (Exception e) {
+                    ULog.e(LearnFoodActivity.class, "onItemClick get resource error:" + e.getMessage());
+                    resourceId = 0;
+                }
+                if (resourceId > 0) {
+                    selectedImage.setImageResource(resourceId);
+                } else
+                    ULog.e(LearnFoodActivity.class, "dont load resource");
 
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			if (progressDialog == null) {
-				progressDialog = new ProgressDialog(LearnFoodActivity.this);
-				progressDialog.setCancelable(false);
-				progressDialog.setCanceledOnTouchOutside(false);
-			}
+                if (Constant.isPro)
+                    speakWord();
+                // selectedImage.setImageResource(mImageIds[position]);
+            }
+        });
+    }
 
-			if (!isFinishing()) {
-				progressDialog.show();
-			}
-		}
+    private void speakWord() {
+        audio.speakWord(tvFood.getText().toString().trim());
+    }
 
-		@Override
-		protected Void doInBackground(Void... params) {
-			QueryBuilder<tblViet> qb;
-			try {
-				daoMaster = ((MyApplication) getApplication()).daoMaster;
-				dao = daoMaster.newSession().getTblVietDao();
-				qb = dao.queryBuilder();
+    private class LoadData extends AsyncTask<Void, Void, Void> {
 
-				qb.where(tblVietDao.Properties.Kind.eq(3));
-				// qb.orderDesc(tblVietDao.Properties.Show);
-				ULog.i(this, "===data db:" + qb.list().size());
-				lstData = qb.list();
-			} catch (Exception e) {
-				ULog.e(LearnFoodActivity.class, "load data error:" + e.getMessage());
-				return null;
-			}
-			return null;
-		}
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (progressDialog == null) {
+                progressDialog = new ProgressDialog(LearnFoodActivity.this);
+                progressDialog.setCancelable(false);
+                progressDialog.setCanceledOnTouchOutside(false);
+            }
 
-		@Override
-		protected void onPostExecute(Void param) {
-			super.onPostExecute(param);
-			int resourceId;
-			if (!isFinishing()) {
-				progressDialog.dismiss();
-			}
-			if (lstData != null && lstData.size() > 0) {
-				resourceId = Utility.getResourcesID(LearnFoodActivity.this, lstData.get(0).getImg());
-				if (resourceId > 0) {
-					selectedImage.setImageResource(resourceId);
-				} else
-					ULog.e(LearnPagerAdapter.class, "dont load resource");
+            if (!isFinishing()) {
+                progressDialog.show();
+            }
+        }
 
-				gallery.setAdapter(new LearnFoodAdapter(LearnFoodActivity.this, lstData));
-				gallery.setSelection(2);
-				tvFood.setText(lstData.get(0).getVi());
-			}
-		}
+        @Override
+        protected Void doInBackground(Void... params) {
+            QueryBuilder qb;
+            AbstractDao dao;
 
-	}
+            try {
+//				daoMaster = ((MyApplication) getApplication()).daoMaster;
+//				dao = daoMaster.newSession().getTblVietDao();
+//				qb = dao.queryBuilder();
+//
+//				qb.where(tblVietDao.Properties.Kind.eq(3));
+
+                dao = Utility.getDao(LearnFoodActivity.this, lang);
+                qb = dao.queryBuilder();
+                qb.where(Utility.getKind(lang).eq(3));
+                // qb.orderDesc(tblVietDao.Properties.Show);
+                ULog.i(this, "===data db:" + qb.list().size());
+                lstData = qb.list();
+            } catch (Exception e) {
+                ULog.e(LearnFoodActivity.class, "load data error:" + e.getMessage());
+                return null;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void param) {
+            super.onPostExecute(param);
+            int resourceId;
+            if (!isFinishing()) {
+                progressDialog.dismiss();
+            }
+            if (lstData != null && lstData.size() > 0) {
+                resourceId = Utility.getResourcesID(LearnFoodActivity.this, Utility.getImg(lstData.get(0), lang));
+                if (resourceId > 0) {
+                    selectedImage.setImageResource(resourceId);
+                } else
+                    ULog.e(LearnFoodActivity.class, "dont load resource");
+
+                gallery.setAdapter(new LearnFoodAdapter(LearnFoodActivity.this, lstData, lang));
+                gallery.setSelection(2);
+                tvFood.setText(Utility.getVi(lstData.get(0), lang));
+            }
+        }
+
+    }
 
 }

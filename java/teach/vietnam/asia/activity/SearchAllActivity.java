@@ -1,20 +1,5 @@
 package teach.vietnam.asia.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import de.greenrobot.dao.query.QueryBuilder;
-import teach.vietnam.asia.R;
-import teach.vietnam.asia.adapter.SearchAllAdapter;
-import teach.vietnam.asia.entity.DaoMaster;
-import teach.vietnam.asia.entity.tblViet;
-import teach.vietnam.asia.entity.tblVietDao;
-import teach.vietnam.asia.sound.AudioPlayer;
-import teach.vietnam.asia.utils.Constant;
-import teach.vietnam.asia.utils.ULog;
-import teach.vietnam.asia.utils.Utility;
-
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -30,16 +15,31 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import de.greenrobot.dao.AbstractDao;
+import de.greenrobot.dao.query.QueryBuilder;
+import teach.vietnam.asia.R;
+import teach.vietnam.asia.adapter.SearchAllAdapter;
+import teach.vietnam.asia.entity.DaoMaster;
+import teach.vietnam.asia.sound.AudioPlayer;
+import teach.vietnam.asia.utils.Constant;
+import teach.vietnam.asia.utils.ULog;
+import teach.vietnam.asia.utils.Utility;
+
 public class SearchAllActivity extends BaseActivity implements OnClickListener {
 
+    private final int REQ_CODE_SPEECH_INPUT = 1000;
     private ListView lstSearch;
     private EditText edtSearch;
     private SearchAllAdapter adapter;
-    private tblVietDao dao;
+    //    private tblVietDao dao;
     private DaoMaster daoMaster;
     private ProgressDialog progressDialog;
-    private final int REQ_CODE_SPEECH_INPUT = 1000;
     private AudioPlayer audio;
+//    private String lang;
 
     @Override
     protected int getViewLayoutId() {
@@ -53,7 +53,7 @@ public class SearchAllActivity extends BaseActivity implements OnClickListener {
         audio = new AudioPlayer(SearchAllActivity.this);
 
         setInitData();
-        new LoadData().execute();
+
     }
 
     @Override
@@ -74,6 +74,18 @@ public class SearchAllActivity extends BaseActivity implements OnClickListener {
         super.onPause();
         if (audio != null)
             audio.stopAll();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        lang = SearchAllActivity.this.getString(R.string.language);
+//        new LoadData().execute();
+    }
+
+    @Override
+    protected void reloadData() {
+        new LoadData().execute();
     }
 
     /**
@@ -120,9 +132,9 @@ public class SearchAllActivity extends BaseActivity implements OnClickListener {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 String phrases;
                 if (Constant.isPro) {
-                    phrases = String.format(adapter.getItem(position).getVi(), adapter.getItem(position).getDefault_word());
+                    phrases = String.format(Utility.getVi(adapter.getItem(position), lang), Utility.getVi(adapter.getItem(position), lang));
                     speakPhrases(phrases);
-                }else {
+                } else {
                     ULog.i(LearnWordsActivity.class, "onItemClick NOT PREMIUM");
                     Utility.installPremiumApp(SearchAllActivity.this);
                 }
@@ -143,7 +155,7 @@ public class SearchAllActivity extends BaseActivity implements OnClickListener {
         }
     }
 
-    private class LoadData extends AsyncTask<Void, Void, List<tblViet>> {
+    private class LoadData extends AsyncTask<Void, Void, List> {
 
         @Override
         protected void onPreExecute() {
@@ -161,27 +173,17 @@ public class SearchAllActivity extends BaseActivity implements OnClickListener {
 
         @SuppressLint("DefaultLocale")
         @Override
-        protected List<tblViet> doInBackground(Void... params) {
-            QueryBuilder<tblViet> qb;
-            String lang;
+        protected List doInBackground(Void... params) {
+            QueryBuilder qb;
+            AbstractDao dao;
             try {
-                daoMaster = ((MyApplication) getApplication()).daoMaster;
-                dao = daoMaster.newSession().getTblVietDao();
+
+                dao = Utility.getDao(SearchAllActivity.this, lang);
                 qb = dao.queryBuilder();
 
-                // qb.where(tblVietDao.Properties.Kind.eq(1));
-                lang = SearchAllActivity.this.getString(R.string.language);
-                if (lang.equals("ja")) {
-                    qb.where(tblVietDao.Properties.Ja.notEq(""));
-                    qb.orderAsc(tblVietDao.Properties.Ja);
-                }else if (lang.equals("ko")) {
-                    qb.where(tblVietDao.Properties.Ko.notEq(""));
-                    qb.orderAsc(tblVietDao.Properties.Ko);
-                }else{
-                    qb.where(tblVietDao.Properties.En.notEq(""));
-                    qb.orderAsc(tblVietDao.Properties.En);
-                }
-                // qb.orderDesc(tblVietDao.Properties.Show);
+                qb.where(Utility.getO1(lang).notEq(""));
+                qb.orderAsc(Utility.getO1(lang));
+
                 ULog.i(this, "===data db:" + qb.list().size());
             } catch (Exception e) {
                 ULog.e(SearchAllActivity.class, "load data error:" + e.getMessage());
@@ -191,7 +193,7 @@ public class SearchAllActivity extends BaseActivity implements OnClickListener {
         }
 
         @Override
-        protected void onPostExecute(List<tblViet> lstData) {
+        protected void onPostExecute(List lstData) {
             super.onPostExecute(lstData);
 
             if (!isFinishing()) {
@@ -200,7 +202,6 @@ public class SearchAllActivity extends BaseActivity implements OnClickListener {
             if (lstData != null && lstData.size() > 0) {
                 adapter = new SearchAllAdapter(SearchAllActivity.this, lstData);
                 lstSearch.setAdapter(adapter);
-
                 // adapter.notifyDataSetChanged();
             }
         }
