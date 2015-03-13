@@ -16,17 +16,17 @@ import java.util.List;
 import java.util.Random;
 
 import teach.vietnam.asia.R;
-import teach.vietnam.asia.entity.tblRecognize;
 import teach.vietnam.asia.utils.ULog;
+import teach.vietnam.asia.utils.Utility;
 
 @SuppressLint("DefaultLocale")
 public class RecognizeTestListAdapter extends BaseAdapter {
 
-    private Context context;
-    private List<tblRecognize> listData;
+//    private Context context;
+    private List listData;
     private LayoutInflater layoutInflater;
     private String lang = "";
-    private String ans = "";
+//    private String ans = "";
 
     public interface RecognizeTest {
         public String getCurrWord();
@@ -34,16 +34,17 @@ public class RecognizeTestListAdapter extends BaseAdapter {
 
     private RecognizeTest recognizeTest;
 
-    public RecognizeTestListAdapter(Context context, List<tblRecognize> listData, RecognizeTest recognizeTest) {
-        this.context = context;
+    public RecognizeTestListAdapter(Context context, List listData, RecognizeTest recognizeTest) {
+//        this.context = context;
 //        this.listData = listData;
+        lang = context.getString(R.string.language);
         this.listData = cloneData(listData);
         this.recognizeTest =  recognizeTest;
-        RandData();
+
 //        ULog.i(RecognizeTestListAdapter.class, "construct ans:" + ans);
         try {
+            RandData();
             layoutInflater = LayoutInflater.from(context);
-            lang = context.getString(R.string.language);
 
         } catch (Exception e) {
             ULog.e(SearchAllAdapter.class, "SearchAllAdapter Error: " + e.getMessage());
@@ -51,19 +52,23 @@ public class RecognizeTestListAdapter extends BaseAdapter {
 
     }
 
-    private List<tblRecognize> cloneData(List<tblRecognize> listData){
-        List<tblRecognize> lstTmp = new ArrayList<tblRecognize>();
-        for(tblRecognize entry : listData){
-            tblRecognize tmp = new tblRecognize();
-            tmp.setVn(entry.getVn());
-            tmp.setEx(entry.getEx());
-            tmp.setEn(entry.getEn());
-            tmp.setJa(entry.getJa());
-            tmp.setKo(entry.getKo());
-            tmp.setGroup_id(entry.getGroup_id());
-            tmp.setWord_id(entry.getWord_id());
-            lstTmp.add(tmp);
+    private List cloneData(List listData){
+        List lstTmp = new ArrayList();
+
+        for(Object entry : listData){
+            lstTmp.add(Utility.getRecDataObject(lang, entry));
         }
+//        for(tblRecognize entry : listData){
+//            tblRecognize tmp = new tblRecognize();
+//            tmp.setVn(entry.getVn());
+//            tmp.setEx(entry.getEx());
+//            tmp.setEn(entry.getEn());
+//            tmp.setJa(entry.getJa());
+//            tmp.setKo(entry.getKo());
+//            tmp.setGroup_id(entry.getGroup_id());
+//            tmp.setWord_id(entry.getWord_id());
+//            lstTmp.add(tmp);
+//        }
         return lstTmp;
     }
 
@@ -86,6 +91,7 @@ public class RecognizeTestListAdapter extends BaseAdapter {
     @SuppressLint("InflateParams")
     public View getView(final int position, View view, ViewGroup viewGroup) {
         final ViewHolder holder;
+        String ex, vn;
         if (view == null) {
             holder = new ViewHolder();
             view = layoutInflater.inflate(R.layout.recognize_test_item, null);
@@ -100,7 +106,10 @@ public class RecognizeTestListAdapter extends BaseAdapter {
             holder = (ViewHolder) view.getTag();
         }
 
-        holder.rlWord.setTag(listData.get(position).getVn());
+        ex = Utility.getREC_Ex(listData.get(position), lang);
+        vn = Utility.getREC_VN(listData.get(position), lang);
+        holder.rlWord.setTag(vn);
+//        holder.tvEx.setText(ex);
         holder.rlWord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,27 +125,9 @@ public class RecognizeTestListAdapter extends BaseAdapter {
         });
 
         holder.imgCheck.setBackgroundResource(R.drawable.uncheck_bg);
-        if (listData.get(position).getEx() != null)
-            holder.tvEx.setText(listData.get(position).getEx() + "");
-        if (lang.equals("ja")) {
-            if (listData.get(position).getJa() != null && !listData.get(position).getJa().equals("")) {
-//                holder.tvEx.setText(listData.get(position).getEx());
-                holder.tvOther.setText(": " + listData.get(position).getJa());
-            }
-        } else if (lang.equals("ko")) {
-            if (listData.get(position).getKo() != null && !listData.get(position).getKo().equals("")) {
-//                holder.tvEx.setText(listData.get(position).getEx());
-                holder.tvOther.setText(": " + listData.get(position).getKo());
-            }
-        } else if (lang.equals("en")) {
-            if (listData.get(position).getEn() != null && !listData.get(position).getEn().equals("")) {
-//                holder.tvEx.setText(listData.get(position).getEx());
-                holder.tvOther.setText(": " + listData.get(position).getEn());
-            }
-        }
-
-        holder.tvWord.setText(listData.get(position).getVn());
-        holder.tvEx.setText(listData.get(position).getEx());
+        holder.tvOther.setText(Utility.getREC_Ot(listData.get(position), lang));
+        holder.tvWord.setText(vn);
+        holder.tvEx.setText(ex);
         return view;
     }
 
@@ -152,7 +143,8 @@ public class RecognizeTestListAdapter extends BaseAdapter {
     private void RandData() {
         int number1;
         int number2;
-        tblRecognize entryTmp;
+//        tblRecognize entryTmp;
+        Object entryTmp;
         Random ran;
         for(int i = 0; i < listData.size() ; i++) {
             ran = new Random();

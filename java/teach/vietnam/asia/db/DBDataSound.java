@@ -1,12 +1,12 @@
 package teach.vietnam.asia.db;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
 import teach.vietnam.asia.BuildConfig;
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.activity.MyApplication;
+import teach.vietnam.asia.activity.SplashActivity;
 import teach.vietnam.asia.entity.DaoMaster;
 import teach.vietnam.asia.entity.DaoSession;
 import teach.vietnam.asia.entity.MapNameEntity;
@@ -16,7 +16,6 @@ import teach.vietnam.asia.utils.Common;
 import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.Prefs;
 import teach.vietnam.asia.utils.ULog;
-import teach.vietnam.asia.utils.Utility;
 
 /**
  * Created by admin on 2/16/15.
@@ -24,13 +23,12 @@ import teach.vietnam.asia.utils.Utility;
 public class DBDataSound extends AsyncTask<Void, Void, Boolean> {
     public DaoMaster daoMaster;
     public ICreateTable iCreateTable;
-    private ProgressDialog progress;
-    private Activity activity;
+    private SplashActivity activity;
     private String initData = "";
     private String lang;
     private Prefs pref;
 
-    public DBDataSound(Activity activity, ICreateTable iCreateTable) {
+    public DBDataSound(SplashActivity activity, ICreateTable iCreateTable) {
         this.activity = activity;
         this.iCreateTable = iCreateTable;
     }
@@ -49,12 +47,12 @@ public class DBDataSound extends AsyncTask<Void, Void, Boolean> {
 //            initData = pref.getStringValue("", Constant.JSON_WORDS_NAME);
             initData = pref.getStringValue("", Constant.KEY_SOUND);
             if (initData.equals("") || !initData.equals(Constant.VALUE_SOUND)) {
-                progress = new ProgressDialog(activity);
-                progress.setMessage(activity.getString(R.string.msg_now_loading));
-                progress.setProgressStyle(progress.STYLE_HORIZONTAL);
-                progress.setCancelable(false);
-                progress.setCanceledOnTouchOutside(false);
-                progress.show();
+                activity.progressDialog = new ProgressDialog(activity);
+                activity.progressDialog.setMessage(activity.getString(R.string.msg_now_loading));
+                activity.progressDialog.setProgressStyle(activity.progressDialog.STYLE_HORIZONTAL);
+                activity.progressDialog.setCancelable(false);
+                activity.progressDialog.setCanceledOnTouchOutside(false);
+                activity.progressDialog.show();
             } else
                 ULog.i(DBDataSound.class, "Don't create db, lang:" + lang);
 
@@ -66,13 +64,9 @@ public class DBDataSound extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected Boolean doInBackground(Void... voids) {
         try {
-            // initData = BaseActivity.pref.getStringValue("", Constant.JSON_WORDS_NAME);
             if (initData.equals("") || !initData.equals(Constant.VALUE_SOUND)) {
                 ULog.i(DBDataSound.class, "doInBackground Loading....");
                 daoMaster = ((MyApplication) activity.getApplicationContext()).daoMaster;
-//                DaoMaster.dropAllTables(daoMaster.getDatabase(), true);
-//                DaoMaster.createAllTables(daoMaster.getDatabase(), true);
-
                 tblMapNameDao.dropTable(daoMaster.getDatabase(), true);
                 tblMapNameDao.createTable(daoMaster.getDatabase(), true);
                 insertData();
@@ -95,10 +89,9 @@ public class DBDataSound extends AsyncTask<Void, Void, Boolean> {
         if (result)
             pref.putStringValue(Constant.VALUE_SOUND, Constant.KEY_SOUND);
 
-        if (!activity.isFinishing() && progress != null && progress.isShowing())
-            progress.dismiss();
+        if (!activity.isFinishing() && activity.progressDialog != null && activity.progressDialog.isShowing())
+            activity.progressDialog.dismiss();
         iCreateTable.iFinishCreate();
-//            SplashActivity.this.startActivity2(RecognizeMainActicity.class);
 //            SplashActivity.this.startActivity2(AndroidDatabaseManager.class);
 
     }
@@ -107,11 +100,11 @@ public class DBDataSound extends AsyncTask<Void, Void, Boolean> {
         MapNameEntity mapName;
         try {
             DaoSession mDaoSession = daoMaster.newSession();
-            if (Constant.isMyDebug) {
-                mapName = (MapNameEntity) Common.getObjectJson(activity, MapNameEntity.class, Constant.JSON_MAPNAME_NAME);
-            } else {
-                mapName = (MapNameEntity) Common.getDataDecrypt(activity, MapNameEntity.class, Constant.JSON_MAPNAME_NAME);
-            }
+//            if (Constant.isMyDebug) {
+            mapName = (MapNameEntity) Common.getObjectJson(activity, MapNameEntity.class, Constant.JSON_MAPNAME_NAME);
+//            } else {
+//            mapName = (MapNameEntity) Common.getDataDecrypt(activity, MapNameEntity.class, Constant.JSON_MAPNAME_NAME);
+//            }
 
             if (mapName == null) {
                 ULog.e(DBDataSound.class, "Can't load Json");
@@ -119,13 +112,13 @@ public class DBDataSound extends AsyncTask<Void, Void, Boolean> {
             }
 
             ULog.i(this, "===== map name size data :" + mapName.listData.size());
-            progress.setMax(mapName.listData.size());
-            int count=0;
+            activity.progressDialog.setMax(mapName.listData.size());
+            int count = 0;
             for (tblMapName entity : mapName.listData) {
                 count++;
                 // ULog.i(this, "===== Insert data :" + entity.getAlphabet());
                 mDaoSession.insertOrReplace(entity);
-                progress.setProgress(count);
+                activity.progressDialog.setProgress(count);
             }
 
 
@@ -138,6 +131,6 @@ public class DBDataSound extends AsyncTask<Void, Void, Boolean> {
 
 
     public interface ICreateTable {
-        public void iFinishCreate();
+        void iFinishCreate();
     }
 }

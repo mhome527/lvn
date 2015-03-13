@@ -19,10 +19,6 @@ import android.net.wifi.WifiManager;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import android.view.Gravity;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +40,20 @@ import teach.vietnam.asia.BuildConfig;
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.activity.MyApplication;
 import teach.vietnam.asia.entity.DaoMaster;
+import teach.vietnam.asia.entity.tblRecEN;
+import teach.vietnam.asia.entity.tblRecENDao;
+import teach.vietnam.asia.entity.tblRecES;
+import teach.vietnam.asia.entity.tblRecESDao;
+import teach.vietnam.asia.entity.tblRecFR;
+import teach.vietnam.asia.entity.tblRecFRDao;
+import teach.vietnam.asia.entity.tblRecIT;
+import teach.vietnam.asia.entity.tblRecITDao;
+import teach.vietnam.asia.entity.tblRecJA;
+import teach.vietnam.asia.entity.tblRecJADao;
+import teach.vietnam.asia.entity.tblRecKO;
+import teach.vietnam.asia.entity.tblRecKODao;
+import teach.vietnam.asia.entity.tblRecRU;
+import teach.vietnam.asia.entity.tblRecRUDao;
 import teach.vietnam.asia.entity.tblVietEN;
 import teach.vietnam.asia.entity.tblVietENDao;
 import teach.vietnam.asia.entity.tblVietES;
@@ -805,6 +815,231 @@ public class Utility {
         } else {
             tblVietEN vn = (tblVietEN) object;
             vn.setDefault_word(default_word);
+        }
+    }
+
+
+    ///////////recognize
+
+    public static AbstractDao getRecDao(Context context, String lang) {
+        AbstractDao dao;
+        DaoMaster daoMaster = ((MyApplication) context.getApplicationContext()).daoMaster;
+
+        if (lang.equals("ja"))
+            dao = daoMaster.newSession().getTblRecJADao();
+        else if (lang.equals("ko"))
+            dao = daoMaster.newSession().getTblRecKODao();
+        else if (lang.equals("ru"))
+            dao = daoMaster.newSession().getTblRecRUDao();
+        else if (lang.equals("fr"))
+            dao = daoMaster.newSession().getTblRecFRDao();
+        else if (lang.equals("it"))
+            dao = daoMaster.newSession().getTblRecITDao();
+        else if (lang.equals("es"))
+            dao = daoMaster.newSession().getTblRecESDao();
+        else
+            dao = daoMaster.newSession().getTblRecENDao();
+        return dao;
+    }
+
+    /**
+     * delete table Rec
+     * @param lang
+     * @param db
+     */
+    public static void deleteTableRec(String lang, SQLiteDatabase db) {
+        if (lang.equals("ja"))
+            tblRecJADao.dropTable(db, true);
+        else if (lang.equals("ko"))
+            tblRecKODao.dropTable(db, true);
+        else if (lang.equals("ru"))
+            tblRecRUDao.dropTable(db, true);
+        else if (lang.equals("fr"))
+            tblRecFRDao.dropTable(db, true);
+        else if (lang.equals("it"))
+            tblRecITDao.dropTable(db, true);
+        else if (lang.equals("es"))
+            tblRecESDao.dropTable(db, true);
+        else
+            tblRecENDao.dropTable(db, true);
+    }
+
+    /**
+     * create table Rec
+     * @param lang
+     * @param db
+     */
+    public static void CreateTableRec(String lang, SQLiteDatabase db) {
+        if (lang.equals("ja"))
+            tblRecJADao.createTable(db, true);
+        else if (lang.equals("ko"))
+            tblRecKODao.createTable(db, true);
+        else if (lang.equals("ru"))
+            tblRecRUDao.createTable(db, true);
+        else if (lang.equals("fr"))
+            tblRecFRDao.createTable(db, true);
+        else if (lang.equals("it"))
+            tblRecITDao.createTable(db, true);
+        else if (lang.equals("es"))
+            tblRecESDao.createTable(db, true);
+        else
+            tblRecENDao.createTable(db, true);
+    }
+
+    ///
+    public static String getREC_VN(Object entity, String lang) {
+        if (lang.equals(Constant.JA))
+            return ((tblRecJA) entity).getVn();
+        else if (lang.equals(Constant.KO))
+            return ((tblRecKO) entity).getVn();
+        else if (lang.equals(Constant.FR))
+            return ((tblRecFR) entity).getVn();
+        else if (lang.equals(Constant.RU))
+            return ((tblRecRU) entity).getVn();
+        else if (lang.equals(Constant.IT))
+            return ((tblRecIT) entity).getVn();
+        else if (lang.equals(Constant.ES))
+            return ((tblRecES) entity).getVn();
+        else
+            return ((tblRecEN) entity).getVn();
+    }
+
+    ///recognize
+    public static String getREC_Ex(Object entity, String lang) {
+        if (lang.equals(Constant.JA))
+            return ((tblRecJA) entity).getEx();
+        else if (lang.equals(Constant.KO))
+            return ((tblRecKO) entity).getEx();
+        else if (lang.equals(Constant.FR))
+            return ((tblRecFR) entity).getEx();
+        else if (lang.equals(Constant.RU))
+            return ((tblRecRU) entity).getEx();
+        else if (lang.equals(Constant.IT))
+            return ((tblRecIT) entity).getEx();
+        else if (lang.equals(Constant.ES))
+            return ((tblRecES) entity).getEx();
+        else
+            return ((tblRecEN) entity).getEx();
+    }
+
+    ///recognize
+    public static String getREC_Ot(Object entity, String lang) {
+        if (lang.equals(Constant.JA))
+            return ((tblRecJA) entity).getOt();
+        else if (lang.equals(Constant.KO))
+            return ((tblRecKO) entity).getOt();
+        else if (lang.equals(Constant.FR))
+            return ((tblRecFR) entity).getOt();
+        else if (lang.equals(Constant.RU))
+            return ((tblRecRU) entity).getOt();
+        else if (lang.equals(Constant.IT))
+            return ((tblRecIT) entity).getOt();
+        else if (lang.equals(Constant.ES))
+            return ((tblRecES) entity).getOt();
+        else
+            return ((tblRecEN) entity).getOt();
+    }
+
+    ///recognize
+    public static Property getREC_GroupID(String lang) {
+        if (lang.equals(Constant.JA))
+            return tblRecJADao.Properties.Group_id;
+        else if (lang.equals(Constant.KO))
+            return tblRecKODao.Properties.Group_id;
+        else if (lang.equals(Constant.FR))
+            return tblRecFRDao.Properties.Group_id;
+        else if (lang.equals(Constant.RU))
+            return tblRecRUDao.Properties.Group_id;
+        else if (lang.equals(Constant.IT))
+            return tblRecITDao.Properties.Group_id;
+        else if (lang.equals(Constant.ES))
+            return tblRecESDao.Properties.Group_id;
+        else
+            return tblRecENDao.Properties.Group_id;
+    }
+
+    public static String getRecTableName(String lang) {
+        Property p;
+        if (lang.equals("ja"))
+            return tblRecJADao.TABLENAME;
+        else if (lang.equals("ko"))
+            return tblRecKODao.TABLENAME;
+        else if (lang.equals("ru"))
+            return tblRecRUDao.TABLENAME;
+        else if (lang.equals("fr"))
+            return tblRecFRDao.TABLENAME;
+        else if (lang.equals("it"))
+            return tblRecITDao.TABLENAME;
+        else if (lang.equals("es"))
+            return tblRecESDao.TABLENAME;
+        else
+            return tblRecENDao.TABLENAME;
+    }
+
+    /**
+     * get filename by language
+     *
+     * @param lang
+     * @return
+     */
+    public static String getFileNameRecDB(String lang) {
+
+        if (lang.equals("ja"))
+            return Constant.REC_JA;
+        else if (lang.equals("ko"))
+            return Constant.REC_KO;
+        else if (lang.equals("ru"))
+            return Constant.REC_RU;
+        else if (lang.equals("fr"))
+            return Constant.REC_FR;
+        else if (lang.equals("it"))
+            return Constant.REC_IT;
+        else if (lang.equals("es"))
+            return Constant.REC_ES;
+        else
+            return Constant.REC_EN;
+    }
+
+    //(Integer group_id, Integer word_id, String vn, String ex, String ot)
+    public static Object getRecDataObject(String lang, int group_id, int word_id, String vn, String ex, String ot) {
+        if (lang.equals(Constant.JA))
+            return new tblRecJA(group_id, word_id, vn, ex, ot);
+        else if (lang.equals(Constant.KO))
+            return new tblRecKO(group_id, word_id, vn, ex, ot);
+        else if (lang.equals(Constant.FR))
+            return new tblRecFR(group_id, word_id, vn, ex, ot);
+        else if (lang.equals(Constant.RU))
+            return new tblRecRU(group_id, word_id, vn, ex, ot);
+        else if (lang.equals(Constant.IT))
+            return new tblRecIT(group_id, word_id, vn, ex, ot);
+        else if (lang.equals(Constant.ES))
+            return new tblRecES(group_id, word_id, vn, ex, ot);
+        else
+            return new tblRecEN(group_id, word_id, vn, ex, ot);
+    }
+
+    public static Object getRecDataObject(String lang, Object obj) {
+        if (lang.equals(Constant.JA)) {
+            tblRecJA obj1 = (tblRecJA) obj;
+            return new tblRecJA(obj1.getGroup_id(), obj1.getWord_id(), obj1.getVn(), obj1.getEx(), obj1.getOt());
+        } else if (lang.equals(Constant.KO)) {
+            tblRecKO obj1 = (tblRecKO) obj;
+            return new tblRecKO(obj1.getGroup_id(), obj1.getWord_id(), obj1.getVn(), obj1.getEx(), obj1.getOt());
+        } else if (lang.equals(Constant.FR)) {
+            tblRecFR obj1 = (tblRecFR) obj;
+            return new tblRecFR(obj1.getGroup_id(), obj1.getWord_id(), obj1.getVn(), obj1.getEx(), obj1.getOt());
+        } else if (lang.equals(Constant.RU)) {
+            tblRecRU obj1 = (tblRecRU) obj;
+            return new tblRecRU(obj1.getGroup_id(), obj1.getWord_id(), obj1.getVn(), obj1.getEx(), obj1.getOt());
+        } else if (lang.equals(Constant.IT)) {
+            tblRecIT obj1 = (tblRecIT) obj;
+            return new tblRecIT(obj1.getGroup_id(), obj1.getWord_id(), obj1.getVn(), obj1.getEx(), obj1.getOt());
+        } else if (lang.equals(Constant.ES)) {
+            tblRecES obj1 = (tblRecES) obj;
+            return new tblRecES(obj1.getGroup_id(), obj1.getWord_id(), obj1.getVn(), obj1.getEx(), obj1.getOt());
+        } else {
+            tblRecEN obj1 = (tblRecEN) obj;
+            return new tblRecEN(obj1.getGroup_id(), obj1.getWord_id(), obj1.getVn(), obj1.getEx(), obj1.getOt());
         }
     }
 }

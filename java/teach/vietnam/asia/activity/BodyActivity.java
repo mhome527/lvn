@@ -6,8 +6,11 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.sound.AudioPlayer;
+import teach.vietnam.asia.utils.Utility;
 
 public class BodyActivity extends BaseActivity implements OnClickListener {
 	private Button btnHead;
@@ -26,7 +29,10 @@ public class BodyActivity extends BaseActivity implements OnClickListener {
 		tvViet = getViewChild(R.id.tvViet);
 		tvOther = getViewChild(R.id.tvOther);
 		initData();
-	}
+
+        Utility.setScreenNameGA("BodyActivity - lang:" + Locale.getDefault().getLanguage());
+
+    }
 
 	private void initData() {
 		audio = new AudioPlayer(BodyActivity.this);

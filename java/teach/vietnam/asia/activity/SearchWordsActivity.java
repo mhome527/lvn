@@ -52,8 +52,9 @@ public class SearchWordsActivity extends BaseActivity implements OnClickListener
 
         position = getIntent().getIntExtra(Constant.INTENT_POSITION, 0);
 
-    }
+        Utility.setScreenNameGA("SearchWordsActivity - lang:" + Locale.getDefault().getLanguage());
 
+    }
 
 
     @Override
@@ -91,6 +92,13 @@ public class SearchWordsActivity extends BaseActivity implements OnClickListener
         super.onResume();
 //        lang = SearchWordsActivity.this.getString(R.string.language);
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (progressDialog != null && progressDialog.isShowing())
+            progressDialog.dismiss();
     }
 
     @Override
@@ -172,15 +180,20 @@ public class SearchWordsActivity extends BaseActivity implements OnClickListener
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            if (!isFinishing()) {
+
+
+            if (progressDialog != null && progressDialog.isShowing())
                 progressDialog.dismiss();
-            }
+
+            if (isFinishing())
+                return;
             if (lstData != null && lstData.size() > 0) {
 
                 adapter = new SearchAdapter(SearchWordsActivity.this, lstData);
                 lstSearch.setAdapter(adapter);
                 // adapter.notifyDataSetChanged();
-            }
+            }else
+                startActivity2(MainActivity.class);
 
         }
 

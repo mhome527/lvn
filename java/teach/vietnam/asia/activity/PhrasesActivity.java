@@ -57,6 +57,8 @@ public class PhrasesActivity extends BaseActivity implements OnClickListener {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         initData();
 
+        Utility.setScreenNameGA("PhrasesActivity - lang:" + lang);
+
     }
 
     @Override
@@ -133,6 +135,13 @@ public class PhrasesActivity extends BaseActivity implements OnClickListener {
 //            lang = langTmp;
 //            new LoadData().execute();
 //        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (progressDialog != null && progressDialog.isShowing())
+            progressDialog.dismiss();
     }
 
     @Override
@@ -217,15 +226,20 @@ public class PhrasesActivity extends BaseActivity implements OnClickListener {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
 
-            if (!isFinishing()) {
+            if (progressDialog != null && progressDialog.isShowing())
                 progressDialog.dismiss();
+
+            if (isFinishing()) {
+               return;
             }
             if (lstData != null && lstData.size() > 0) {
                 ULog.i(PhrasesActivity.this, "load data size:" + lstData.size());
                 adapter = new PhrasesAdapter(PhrasesActivity.this, lstData);
                 lstPhrases.setAdapter(adapter);
-            } else
+            } else{
                 ULog.e(PhrasesActivity.class, "Load data Error");
+                startActivity2(MainActivity.class);
+            }
         }
 
     }

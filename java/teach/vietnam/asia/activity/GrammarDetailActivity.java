@@ -4,9 +4,12 @@ import android.os.Bundle;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import java.util.Locale;
+
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.ULog;
+import teach.vietnam.asia.utils.Utility;
 
 public class GrammarDetailActivity extends BaseActivity {
 
@@ -31,6 +34,9 @@ public class GrammarDetailActivity extends BaseActivity {
             if (pos < arrName.length)
                 filename = "file:///android_asset/grammar/" + arrName[pos] +".html";
             webView.loadUrl(filename);
+
+            Utility.setScreenNameGA("GrammarDetailActivity - lang:" + Locale.getDefault().getLanguage());
+
         }catch (Exception e){
             ULog.e(GrammarDetailActivity.class, "initView Error:" + e.getMessage());
         }

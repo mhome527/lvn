@@ -5,94 +5,86 @@ import android.os.AsyncTask;
 
 import teach.vietnam.asia.BuildConfig;
 import teach.vietnam.asia.R;
-import teach.vietnam.asia.activity.MainActivity;
 import teach.vietnam.asia.activity.MyApplication;
+import teach.vietnam.asia.activity.RecognizeMainActicity;
 import teach.vietnam.asia.entity.DaoMaster;
 import teach.vietnam.asia.entity.DaoSession;
-import teach.vietnam.asia.entity.EnEntity;
-import teach.vietnam.asia.entity.EsEntity;
-import teach.vietnam.asia.entity.FrEntity;
-import teach.vietnam.asia.entity.ItEntity;
-import teach.vietnam.asia.entity.JaEntity;
-import teach.vietnam.asia.entity.KoEntity;
-import teach.vietnam.asia.entity.RuEntity;
-import teach.vietnam.asia.entity.tblVietEN;
-import teach.vietnam.asia.entity.tblVietES;
-import teach.vietnam.asia.entity.tblVietFR;
-import teach.vietnam.asia.entity.tblVietIT;
-import teach.vietnam.asia.entity.tblVietJA;
-import teach.vietnam.asia.entity.tblVietKO;
-import teach.vietnam.asia.entity.tblVietRU;
+import teach.vietnam.asia.entity.EnRecEntity;
+import teach.vietnam.asia.entity.EsRecEntity;
+import teach.vietnam.asia.entity.FrRecEntity;
+import teach.vietnam.asia.entity.ItRecEntity;
+import teach.vietnam.asia.entity.JaRecEntity;
+import teach.vietnam.asia.entity.KoRecEntity;
+import teach.vietnam.asia.entity.RuRecEntity;
+import teach.vietnam.asia.entity.tblRecEN;
+import teach.vietnam.asia.entity.tblRecES;
+import teach.vietnam.asia.entity.tblRecFR;
+import teach.vietnam.asia.entity.tblRecIT;
+import teach.vietnam.asia.entity.tblRecJA;
+import teach.vietnam.asia.entity.tblRecKO;
+import teach.vietnam.asia.entity.tblRecRU;
 import teach.vietnam.asia.utils.Common;
-import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.Prefs;
 import teach.vietnam.asia.utils.ULog;
 import teach.vietnam.asia.utils.Utility;
 
 /**
- * Created by admin on 2/16/15.
+ * Created by admin on 3/3/15.
  */
-public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
-    public DaoMaster daoMaster;
-    ICreateTable iCreateTable;
-//    private ProgressDialog progress;
-    private MainActivity activity;
-    private String initData = "";
-    private String lang;
-    private Prefs pref;
+public class DBDataRecognize extends AsyncTask<Void, Void, Boolean> {
 
-    public DBDataLanguage(MainActivity activity, ICreateTable iCreateTable) {
+    public DaoMaster daoMaster;
+    private String initData = "";
+    private RecognizeMainActicity activity;
+//    private ProgressDialog progressDialog;
+    private Prefs pref;
+    private String lang;
+
+    private IFinishSave iFinishSave;
+
+    public DBDataRecognize(RecognizeMainActicity activity, IFinishSave iFinishSave) {
         this.activity = activity;
-        this.iCreateTable = iCreateTable;
+        this.iFinishSave = iFinishSave;
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        ULog.i(DBDataLanguage.this, "onPreExecute....");
-        try {
-            lang = activity.getString(R.string.language);
-            pref = new Prefs(activity.getApplicationContext());
+        ULog.i(DBDataRecognize.this, "onPreExecute loading........................");
+        lang = activity.lang;
+        pref = new Prefs(activity.getApplicationContext());
 
-//            dao = Utility.getDao(activity, lang);
-//                qb = dao.queryBuilder();
-
-//            initData = pref.getStringValue("", Constant.JSON_WORDS_NAME);
-            initData = pref.getStringValue("", lang);
-            if (initData.equals("") || !initData.equals(activity.getString(R.string.db_value))) {
-                activity.progressDialog = new ProgressDialog(activity);
-                activity.progressDialog.setMessage(activity.getString(R.string.msg_now_loading));
-                activity.progressDialog.setProgressStyle(activity.progressDialog.STYLE_HORIZONTAL);
-                activity.progressDialog.setCancelable(false);
-                activity.progressDialog.setCanceledOnTouchOutside(false);
-//                activity.progressDialog.show();
-            } else
-                ULog.i(DBDataLanguage.class, "Don't create db, lang:" + lang);
-
-        } catch (Exception e) {
-            ULog.e(DBDataLanguage.class, "CreateInitData onPreExecute Error: " + e.getMessage());
-        }
+        initData = pref.getStringValue("", lang + "rc");
+        if (initData.equals("") || !initData.equals(activity.getString(R.string.db_value_rc))) {
+            activity.progressDialog = new ProgressDialog(activity);
+            activity.progressDialog.setMessage(activity.getString(R.string.msg_now_loading));
+            activity.progressDialog.setProgressStyle(activity.progressDialog.STYLE_HORIZONTAL);
+            activity.progressDialog.setCancelable(false);
+            activity.progressDialog.setCanceledOnTouchOutside(false);
+            activity.progressDialog.show();
+        } else
+            ULog.i(DBDataLanguage.class, "Don't create db, lang:" + lang);
     }
 
     @Override
     protected Boolean doInBackground(Void... voids) {
+
         try {
-            // initData = BaseActivity.pref.getStringValue("", Constant.JSON_WORDS_NAME);
-            if (initData.equals("") || !initData.equals(activity.getString(R.string.db_value))) {
-                ULog.i(DBDataLanguage.class, "doInBackground Loading....");
-                daoMaster = ((MyApplication) activity.getApplicationContext()).daoMaster;
-                Utility.deleteTableLang(lang, daoMaster.getDatabase());
-                Utility.CreateTableLang(lang, daoMaster.getDatabase());
-//                insertData(activity);
+            ULog.i(DBDataRecognize.this, "Loading....");
+            daoMaster = ((MyApplication) activity.getApplicationContext()).daoMaster;
+            initData = activity.pref.getStringValue("", lang + "rc");
+            if (initData.equals("") || !initData.equals(activity.getString(R.string.db_value_rc))) {
+                Utility.deleteTableRec(lang, daoMaster.getDatabase());
+                Utility.CreateTableRec(lang, daoMaster.getDatabase());
+
                 insertTable();
             } else {
-                ULog.i(DBDataLanguage.class, "Don't insert");
-//                Thread.sleep(1000);
+                ULog.i(RecognizeMainActicity.class, "Don't insert map");
+                return false;
             }
-            // BaseActivity.pref.putStringValue(Constant.PREF_INIT, Constant.PREF_INIT);
 
         } catch (Exception e) {
-            ULog.e(DBDataLanguage.class, "load data fail");
+            ULog.e(RecognizeMainActicity.class, "load data fail");
             return false;
         }
         return true;
@@ -102,14 +94,12 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
     protected void onPostExecute(Boolean result) {
         super.onPostExecute(result);
         if (result)
-            pref.putStringValue(activity.getString(R.string.db_value), lang);
+            pref.putStringValue(activity.getString(R.string.db_value_rc), lang + "rc");
 
         if (!activity.isFinishing() && activity.progressDialog != null && activity.progressDialog.isShowing())
             activity.progressDialog.dismiss();
-        iCreateTable.iFinishCreate();
-//            SplashActivity.this.startActivity2(RecognizeMainActicity.class);
-//            SplashActivity.this.startActivity2(AndroidDatabaseManager.class);
-
+        iFinishSave.isFinish(result);
+//        new LoadData().execute();
     }
 
     private void insertTable() {
@@ -130,14 +120,11 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
     }
 
     private void insertDataEN() {
-        EnEntity word;
+        EnRecEntity word;
         try {
             DaoSession mDaoSession = daoMaster.newSession();
-//            if (Constant.isMyDebug) {
-                word = (EnEntity) Common.getObjectJson(activity, EnEntity.class, Utility.getFileNameDB(lang));
-//            } else {
-//                word = (EnEntity) Common.getDataDecrypt(activity, EnEntity.class, Utility.getFileNameDB(lang));
-//            }
+            word = (EnRecEntity) Common.getObjectJson(activity, EnRecEntity.class, Utility.getFileNameRecDB(lang));
+
 
             if (word == null) {
                 ULog.e(DBDataLanguage.class, "Can't load Json");
@@ -148,7 +135,7 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
             activity.progressDialog.setMax(word.listData.size());
 
             int count = 0;
-            for (tblVietEN entity : word.listData) {
+            for (tblRecEN entity : word.listData) {
                 mDaoSession.insertOrReplace(entity);
                 count++;
                 activity.progressDialog.setProgress(count);
@@ -165,14 +152,10 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
     }
 
     private void insertDataJA() {
-        JaEntity word;
+        JaRecEntity word;
         try {
             DaoSession mDaoSession = daoMaster.newSession();
-//            if (Constant.isMyDebug) {
-                word = (JaEntity) Common.getObjectJson(activity, JaEntity.class, Constant.FILE_JA);
-//            } else {
-//                word = (JaEntity) Common.getDataDecrypt(activity, JaEntity.class, Constant.FILE_JA);
-//            }
+            word = (JaRecEntity) Common.getObjectJson(activity, JaRecEntity.class, Utility.getFileNameRecDB(lang));
 
             if (word == null) {
                 ULog.e(DBDataLanguage.class, "Can't load Json");
@@ -181,12 +164,12 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
             activity.progressDialog.setMax(word.listData.size());
             ULog.i(this, "=====insertDataJA words size data :" + word.listData.size());
             int count = 0;
-            for (tblVietJA entity : word.listData) {
+            for (tblRecJA entity : word.listData) {
                 mDaoSession.insertOrReplace(entity);
                 count++;
                 activity.progressDialog.setProgress(count);
             }
-            ULog.i(this, "===== words load finish");
+            ULog.i(this, "insertDataJA ===== words load finish");
 //            activity.progressDialog.dismiss();
             mDaoSession.clear();
 
@@ -198,14 +181,11 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
     }
 
     private void insertDataKo() {
-        KoEntity word;
+        KoRecEntity word;
         try {
             DaoSession mDaoSession = daoMaster.newSession();
-//            if (Constant.isMyDebug) {
-                word = (KoEntity) Common.getObjectJson(activity, KoEntity.class, Constant.FILE_KO);
-//            } else {
-//                word = (KoEntity) Common.getDataDecrypt(activity, KoEntity.class, Constant.FILE_KO);
-//            }
+            word = (KoRecEntity) Common.getObjectJson(activity, KoRecEntity.class, Utility.getFileNameRecDB(lang));
+
 
             if (word == null) {
                 ULog.e(DBDataLanguage.class, "Can't load Json");
@@ -215,12 +195,12 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
             activity.progressDialog.setMax(word.listData.size());
             ULog.i(this, "===== words size data :" + word.listData.size());
             int count = 0;
-            for (tblVietKO entity : word.listData) {
+            for (tblRecKO entity : word.listData) {
                 mDaoSession.insertOrReplace(entity);
                 count++;
                 activity.progressDialog.setProgress(count);
             }
-            ULog.i(this, "===== words load finish");
+            ULog.i(this, "insertDataKo ===== words load finish");
 //            activity.progressDialog.dismiss();
             mDaoSession.clear();
 
@@ -232,14 +212,11 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
     }
 
     private void insertDataEs() {
-        EsEntity word;
+        EsRecEntity word;
         try {
             DaoSession mDaoSession = daoMaster.newSession();
-//            if (Constant.isMyDebug) {
-                word = (EsEntity) Common.getObjectJson(activity, EsEntity.class, Constant.FILE_ES);
-//            } else {
-//                word = (EsEntity) Common.getDataDecrypt(activity, EsEntity.class, Constant.FILE_ES);
-//            }
+            word = (EsRecEntity) Common.getObjectJson(activity, EsRecEntity.class, Utility.getFileNameRecDB(lang));
+
 
             if (word == null) {
                 ULog.e(DBDataLanguage.class, "Can't load Json");
@@ -249,12 +226,12 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
             activity.progressDialog.setMax(word.listData.size());
             ULog.i(this, "===== words size data :" + word.listData.size());
             int count = 0;
-            for (tblVietES entity : word.listData) {
+            for (tblRecES entity : word.listData) {
                 mDaoSession.insertOrReplace(entity);
                 count++;
                 activity.progressDialog.setProgress(count);
             }
-            ULog.i(this, "===== words load finish");
+            ULog.i(this, "insertDataEs ===== words load finish");
 //            activity.progressDialog.dismiss();
             mDaoSession.clear();
 
@@ -266,14 +243,11 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
     }
 
     private void insertDataFR() {
-        FrEntity word;
+        FrRecEntity word;
         try {
             DaoSession mDaoSession = daoMaster.newSession();
-//            if (Constant.isMyDebug) {
-                word = (FrEntity) Common.getObjectJson(activity, FrEntity.class, Constant.FILE_FR);
-//            } else {
-//                word = (FrEntity) Common.getDataDecrypt(activity, FrEntity.class, Constant.FILE_FR);
-//            }
+            word = (FrRecEntity) Common.getObjectJson(activity, FrRecEntity.class, Utility.getFileNameRecDB(lang));
+
 
             if (word == null) {
                 ULog.e(DBDataLanguage.class, "Can't load Json");
@@ -283,12 +257,12 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
             activity.progressDialog.setMax(word.listData.size());
             ULog.i(this, "===== words size data :" + word.listData.size());
             int count = 0;
-            for (tblVietFR entity : word.listData) {
+            for (tblRecFR entity : word.listData) {
                 mDaoSession.insertOrReplace(entity);
                 count++;
                 activity.progressDialog.setProgress(count);
             }
-            ULog.i(this, "===== words load finish");
+            ULog.i(this, "insertDataFR ===== words load finish");
 //            activity.progressDialog.dismiss();
             mDaoSession.clear();
 
@@ -300,14 +274,11 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
     }
 
     private void insertDataIT() {
-        ItEntity word;
+        ItRecEntity word;
         try {
             DaoSession mDaoSession = daoMaster.newSession();
-//            if (Constant.isMyDebug) {
-                word = (ItEntity) Common.getObjectJson(activity, ItEntity.class, Constant.FILE_IT);
-//            } else {
-//                word = (ItEntity) Common.getDataDecrypt(activity, ItEntity.class, Constant.FILE_IT);
-//            }
+            word = (ItRecEntity) Common.getObjectJson(activity, ItRecEntity.class, Utility.getFileNameRecDB(lang));
+
 
             if (word == null) {
                 ULog.e(DBDataLanguage.class, "Can't load Json");
@@ -317,12 +288,12 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
             activity.progressDialog.setMax(word.listData.size());
             ULog.i(this, "===== words size data :" + word.listData.size());
             int count = 0;
-            for (tblVietIT entity : word.listData) {
+            for (tblRecIT entity : word.listData) {
                 mDaoSession.insertOrReplace(entity);
                 count++;
                 activity.progressDialog.setProgress(count);
             }
-            ULog.i(this, "===== words load finish");
+            ULog.i(this, "insertDataIT ===== words load finish");
 //            activity.progressDialog.dismiss();
             mDaoSession.clear();
 
@@ -334,14 +305,10 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
     }
 
     private void insertDataRU() {
-        RuEntity word;
+        RuRecEntity word;
         try {
             DaoSession mDaoSession = daoMaster.newSession();
-//            if (Constant.isMyDebug) {
-                word = (RuEntity) Common.getObjectJson(activity, RuEntity.class, Constant.FILE_RU);
-//            } else {
-//                word = (RuEntity) Common.getDataDecrypt(activity, RuEntity.class, Constant.FILE_RU);
-//            }
+            word = (RuRecEntity) Common.getObjectJson(activity, RuRecEntity.class, Utility.getFileNameRecDB(lang));
 
             if (word == null) {
                 ULog.e(DBDataLanguage.class, "Can't load Json");
@@ -351,12 +318,12 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
             activity.progressDialog.setMax(word.listData.size());
             ULog.i(this, "===== words size data :" + word.listData.size());
             int count = 0;
-            for (tblVietRU entity : word.listData) {
+            for (tblRecRU entity : word.listData) {
                 mDaoSession.insertOrReplace(entity);
                 count++;
                 activity.progressDialog.setProgress(count);
             }
-            ULog.i(this, "insertDataRU ===== words load finish");
+            ULog.i(this, "===== insertDataRU words load finish");
 //            activity.progressDialog.dismiss();
             mDaoSession.clear();
 
@@ -367,8 +334,10 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
         }
     }
 
-    public interface ICreateTable {
-        void iFinishCreate();
+    public interface IFinishSave {
+        void isFinish(boolean b);
     }
 
+
 }
+

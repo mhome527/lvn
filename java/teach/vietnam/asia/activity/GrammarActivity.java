@@ -7,8 +7,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.Locale;
+
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.utils.Constant;
+import teach.vietnam.asia.utils.Utility;
 
 public class GrammarActivity extends BaseActivity {
 
@@ -22,6 +25,9 @@ public class GrammarActivity extends BaseActivity {
     protected void initView(Bundle savedInstanceState) {
         lstGrammar = getViewChild(R.id.lstGrammar);
         initData();
+
+        Utility.setScreenNameGA("GrammarActivity - lang:" + Locale.getDefault().getLanguage());
+
     }
 
     private void initData(){

@@ -14,28 +14,26 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
-import teach.vietnam.asia.BuildConfig;
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.adapter.MenuRecognizeAdapter;
+import teach.vietnam.asia.db.DBDataRecognize;
 import teach.vietnam.asia.entity.DaoMaster;
 import teach.vietnam.asia.entity.DaoSession;
-import teach.vietnam.asia.entity.RecognizeEntity;
-import teach.vietnam.asia.entity.tblRecognize;
-import teach.vietnam.asia.entity.tblRecognizeDao;
 import teach.vietnam.asia.fragment.BaseFragment;
 import teach.vietnam.asia.fragment.LearnRecoginzeFragment;
 import teach.vietnam.asia.fragment.TestRecognizeFragment;
-import teach.vietnam.asia.utils.Common;
 import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.ULog;
+import teach.vietnam.asia.utils.Utility;
 import teach.vietnam.asia.view.MainMenuLayout;
 
-public class RecognizeMainActicity extends BaseActivity implements BaseFragment.OnFragmentInteractionListener, FragmentManager.OnBackStackChangedListener {
+public class RecognizeMainActicity extends BaseActivity implements BaseFragment.OnFragmentInteractionListener, FragmentManager.OnBackStackChangedListener, DBDataRecognize.IFinishSave {
 
+    public ProgressDialog progressDialog;
     private boolean mShowingBack = false;
     private DaoMaster daoMaster;
-    private ProgressDialog progress;
     private Bundle savedInstanceState;
     private int amount = 0;
     private MainMenuLayout menuLayout;
@@ -62,6 +60,9 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
 
         /////
         setInitData();
+
+        Utility.setScreenNameGA("RecognizeMainActicity - lang:" + Locale.getDefault().getLanguage());
+
     }
 
     @Override
@@ -74,8 +75,21 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
     }
 
     @Override
-    protected void reloadData() {
+    protected void onResume() {
+        super.onResume();
+        new DBDataRecognize(this, this).execute();
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (progressDialog != null && progressDialog.isShowing())
+            progressDialog.dismiss();
+    }
+
+    @Override
+    protected void reloadData() {
+        new LoadData().execute();
     }
 
 //    @Override
@@ -135,7 +149,7 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
 
                     Fragment fragment;
                     fragment = getFragmentManager().findFragmentById(R.id.container);
-                    if (fragment!=null && fragment instanceof LearnRecoginzeFragment) {
+                    if (fragment != null && fragment instanceof LearnRecoginzeFragment) {
                         ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                         ((LearnRecoginzeFragment) fragment).setTextVoid(result.get(0));
                     }
@@ -157,16 +171,6 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
     private void setInitData() {
         String initData = pref.getStringValue("", Constant.JSON_RECOGNIZE_NAME);
         ULog.i(RecognizeMainActicity.class, "setInit: " + initData);
-        if (initData.equals("") || !initData.equals(Constant.KEY_UPDATE)) {
-            progress = new ProgressDialog(this);
-            progress.setMessage(getString(R.string.msg_now_loading));
-            progress.setProgressStyle(progress.STYLE_HORIZONTAL);
-            progress.setCancelable(false);
-            progress.setCanceledOnTouchOutside(false);
-
-            new CreateInitData().execute();
-        } else
-            new LoadData().execute();
 
         lstRecognize.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -180,13 +184,23 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
     private void setPageLearn(int number) {
         Fragment fragment;
         fragment = getFragmentManager().findFragmentById(R.id.container);
-        if (fragment!=null && fragment instanceof LearnRecoginzeFragment) {
+        if (fragment != null && fragment instanceof LearnRecoginzeFragment) {
             ((LearnRecoginzeFragment) fragment).setCurrentPage(number);
-        }else{
-            onFragmentInteraction(LearnRecoginzeFragment.class,  number);
+        } else {
+            onFragmentInteraction(LearnRecoginzeFragment.class, number);
             ULog.i(RecognizeMainActicity.class, "Test: " + number);
         }
         hideMenu();
+    }
+
+    @Override
+    public void isFinish(boolean b) {
+        if (b) {
+            new LoadData().execute();
+        } else {
+            if (progressDialog != null && progressDialog.isShowing())
+                progressDialog.dismiss();
+        }
     }
 
     //get amount pager
@@ -195,16 +209,16 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            if (progress == null) {
-                progress = new ProgressDialog(RecognizeMainActicity.this);
-                progress.setCancelable(false);
-                progress.setCanceledOnTouchOutside(false);
-            }
-
-            if (!isFinishing()) {
-                progress.show();
-                ULog.i(RecognizeMainActicity.class, "LoadData progress...");
-            }
+//            if (progressDialog == null) {
+//                progressDialog = new ProgressDialog(RecognizeMainActicity.this);
+//                progressDialog.setCancelable(false);
+//                progressDialog.setCanceledOnTouchOutside(false);
+//            }
+//
+//            if (!isFinishing() && !progressDialog.isShowing()) {
+//                progressDialog.show();
+//                ULog.i(RecognizeMainActicity.class, "LoadData progress...");
+//            }
         }
 
         @Override
@@ -223,8 +237,13 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
         protected void onPostExecute(Integer num) {
             super.onPostExecute(num);
             try {
-                if (!isFinishing()) {
-                    progress.dismiss();
+//                if (progressDialog != null && progressDialog.isShowing()) {
+//                    progressDialog.dismiss();
+//                    ULog.i(RecognizeMainActicity.class, "hide  progress...");
+//                }
+
+                if (isFinishing()) {
+                    return;
                 }
                 if (num > 0) {
                     MenuRecognizeAdapter adapter = new MenuRecognizeAdapter(RecognizeMainActicity.this, lstData);
@@ -250,17 +269,11 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
             String cond;
             int count = 1;
             // lstNumberEx = new ArrayList<TblNumberEx>();
-//            cond = "SELECT MAX(" + tblRecognizeDao.Properties.Group_id.name + ") FROM  " + tblRecognizeDao.TABLENAME;
-            cond = "SELECT GROUP_CONCAT(VN) FROM  " + tblRecognizeDao.TABLENAME + " GROUP BY " + tblRecognizeDao.Properties.Group_id.name;
+            cond = "SELECT GROUP_CONCAT(VN) FROM  " + Utility.getRecTableName(lang) + " GROUP BY " + Utility.getREC_GroupID(lang).name;
             ULog.i(RecognizeMainActicity.class, "SQL: " + cond);
             lstData = new ArrayList<String>();
             try {
                 Cursor c = session.getDatabase().rawQuery(cond, null);
-//                if (c.moveToFirst()) {
-//                    level = c.getInt(0);
-//                    ULog.i(RecognizeMainActicity.class, "getLevel max level:" + level);
-//                }
-
                 while (c.moveToNext()) {
                     lstData.add(count++ + ". " + c.getString(0).replace(",", " - "));
                 }
@@ -275,82 +288,4 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
 
     }
 
-    /// Create data
-    private class CreateInitData extends AsyncTask<Void, Void, Boolean> {
-        private String initData = "";
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            ULog.i(CreateInitData.this, "onPreExecute loading........................");
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... voids) {
-
-            try {
-                ULog.i(CreateInitData.this, "Loading....");
-                initData = pref.getStringValue("", Constant.JSON_RECOGNIZE_NAME);
-                if (initData.equals("") || !initData.equals(Constant.KEY_UPDATE)) {
-                    return insertData();
-                } else {
-                    ULog.i(RecognizeMainActicity.class, "Don't insert map");
-                }
-
-            } catch (Exception e) {
-                ULog.e(RecognizeMainActicity.class, "load data fail");
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            super.onPostExecute(result);
-            if (result) {
-                pref.putStringValue(Constant.KEY_UPDATE, Constant.JSON_RECOGNIZE_NAME);
-            }
-            if (!isFinishing() && progress != null && progress.isShowing())
-                progress.dismiss();
-
-            new LoadData().execute();
-        }
-    }
-
-    private boolean insertData() {
-        DaoMaster daoMaster;
-        RecognizeEntity recognizeEntity;
-        try {
-            daoMaster = ((MyApplication) getApplicationContext()).daoMaster;
-            DaoSession mDaoSession = daoMaster.newSession();
-//            if (Constant.isMyDebug) {
-                recognizeEntity = (RecognizeEntity) Common.getObjectJson(this, RecognizeEntity.class, Constant.JSON_RECOGNIZE_NAME);
-//            } else {
-//                recognizeEntity = (RecognizeEntity) Common.getDataDecrypt(this, RecognizeEntity.class, Constant.JSON_RECOGNIZE_NAME);
-//            }
-
-            if (recognizeEntity == null) {
-                ULog.e(RecognizeMainActicity.class, "Can't load Json");
-                return false;
-            }
-
-            ULog.i(this, "===== map name size data :" + recognizeEntity.listData.size());
-            progress.setMax(recognizeEntity.listData.size());
-            int count = 0;
-            for (tblRecognize entity : recognizeEntity.listData) {
-                count++;
-                // ULog.i(this, "===== Insert data :" + entity.getAlphabet());
-                mDaoSession.insertOrReplace(entity);
-                progress.setProgress(count);
-            }
-
-
-        } catch (Exception e) {
-            ULog.e(RecognizeMainActicity.class, "Insert error:" + e.getMessage());
-            if (BuildConfig.DEBUG)
-                e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
 }

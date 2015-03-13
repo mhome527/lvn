@@ -15,7 +15,6 @@ import java.util.List;
 
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.entity.PracticeDetailEntity;
-import teach.vietnam.asia.entity.tblRecognize;
 import teach.vietnam.asia.utils.ULog;
 
 public class RecognizePagerTestAdapter extends PagerAdapter  {
@@ -24,13 +23,13 @@ public class RecognizePagerTestAdapter extends PagerAdapter  {
     public ArrayList<PracticeDetailEntity> lstExceriese;
 
     //    private int num;
-    private List<tblRecognize> dataRecognize;
+    private List dataRecognize;
 //    public String currWord = "";
 //    public int amount = 3;
 //    private int arrW[];
     private RecognizeTestListAdapter.RecognizeTest recognizeTest;
 
-    public RecognizePagerTestAdapter(Activity activity, List<tblRecognize> dataRecognize, RecognizeTestListAdapter.RecognizeTest recognizeTest) {
+    public RecognizePagerTestAdapter(Activity activity, List dataRecognize, RecognizeTestListAdapter.RecognizeTest recognizeTest) {
         lstExceriese = new ArrayList<PracticeDetailEntity>();
 //        this.num = num + 1;
         this.activity = activity;

@@ -12,7 +12,6 @@ import android.widget.TextView;
 import java.util.List;
 
 import teach.vietnam.asia.R;
-import teach.vietnam.asia.entity.tblRecognize;
 import teach.vietnam.asia.sound.AudioPlayer;
 import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.ULog;
@@ -22,13 +21,13 @@ import teach.vietnam.asia.utils.Utility;
 public class RecognizeListAdapter extends BaseAdapter {
 
     private Context context;
-    private List<tblRecognize> listData;
+    private List listData;
     private LayoutInflater layoutInflater;
     private String lang = "";
     private AudioPlayer audio;
     private int currPage;
 
-    public RecognizeListAdapter(Context context, List<tblRecognize> listData, int currPage) {
+    public RecognizeListAdapter(Context context, List listData, int currPage) {
         this.context = context;
         this.listData = listData;
         this.currPage = currPage;
@@ -62,6 +61,7 @@ public class RecognizeListAdapter extends BaseAdapter {
     @SuppressLint("InflateParams")
     public View getView(final int position, View view, ViewGroup viewGroup) {
         final ViewHolder holder;
+        String ex, ot;
         if (view == null) {
             holder = new ViewHolder();
             view = layoutInflater.inflate(R.layout.recognize_item, null);
@@ -75,34 +75,24 @@ public class RecognizeListAdapter extends BaseAdapter {
             holder = (ViewHolder) view.getTag();
         }
 
-        if (listData.get(position).getEx() != null && !listData.get(position).getEx().equals("")) {
-            holder.tvEx.setText(listData.get(position).getEx());
+        ex = Utility.getREC_Ex(listData.get(position), lang);
+        if (ex != null && !ex.equals("")) {
+            holder.tvEx.setText(ex);
 //        holder.tvOther.setText("");
 
-            if (lang.equals("ja")) {
-                if (listData.get(position).getJa() != null && !listData.get(position).getJa().equals("")) {
-//                holder.tvEx.setText(listData.get(position).getEx());
-                    holder.tvEx.setText(listData.get(position).getEx() + ":" + listData.get(position).getJa());
-                }
-            } else if (lang.equals("ko")) {
-                if (listData.get(position).getKo() != null && !listData.get(position).getKo().equals("")) {
-//                holder.tvEx.setText(listData.get(position).getEx());
-                    holder.tvEx.setText(listData.get(position).getEx() + ":" + listData.get(position).getKo());
-                }
-            } else if (lang.equals("en")) {
-                if (listData.get(position).getEn() != null && !listData.get(position).getEn().equals("")) {
-//                holder.tvEx.setText(listData.get(position).getEx());
-                    holder.tvEx.setText(listData.get(position).getEx() + ":" + listData.get(position).getEn());
-                }
-            }
         }
-        holder.tvWord.setText(listData.get(position).getVn());
+        holder.tvWord.setText(Utility.getREC_VN(listData.get(position), lang));
+
+        ot = Utility.getREC_Ot(listData.get(position), lang);
+        if (ot != null && !ot.equals(""))
+            holder.tvEx.setText(ex + ": " + ot);
+
         holder.btnSpeak.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 //                audio.speakWord(listData.get(position).getVn());
                 if (Constant.isPro || currPage < 10)
-                    audio.speakWord(listData.get(position).getVn());
+                    audio.speakWord(Utility.getREC_VN(listData.get(position), lang));
                 else
                     Utility.installPremiumApp(context);
             }
@@ -112,7 +102,7 @@ public class RecognizeListAdapter extends BaseAdapter {
 
     public class ViewHolder {
         TextView tvWord;
-        TextView tvOther;
+//        TextView tvOther;
         TextView tvEx;
         Button btnSpeak;
     }

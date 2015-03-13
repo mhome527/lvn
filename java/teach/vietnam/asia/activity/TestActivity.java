@@ -7,12 +7,20 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.List;
 
+import de.greenrobot.dao.query.QueryBuilder;
 import teach.vietnam.asia.BuildConfig;
+import teach.vietnam.asia.entity.DaoMaster;
+import teach.vietnam.asia.entity.tblMapName;
+import teach.vietnam.asia.entity.tblMapNameDao;
+import teach.vietnam.asia.entity.tblVietRU;
+import teach.vietnam.asia.entity.tblVietRUDao;
 import teach.vietnam.asia.utils.EncryptData;
 import teach.vietnam.asia.utils.ULog;
 
 public class TestActivity extends Activity {
+    private static String TAG = "TestActivity";
 	private String fileName = "VN.txt";
 	private String fileNameOut = "VN.data";
 //	private String fileName = "MapName.txt";
@@ -24,8 +32,50 @@ public class TestActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		testFunction();
+//		testFunction();
+        testWord();
 	}
+
+    private void testWord(){
+        DaoMaster daoMaster;
+        tblMapNameDao dao;
+        tblVietRUDao daoRu;
+        List<tblVietRU> lstRu;
+
+
+        QueryBuilder<tblMapName> qb;
+        QueryBuilder<tblVietRU> qbRu;
+        try {
+            daoMaster = ((MyApplication) this.getApplicationContext()).daoMaster;
+
+            dao = daoMaster.newSession().getTblMapNameDao();
+//            qb = dao.queryBuilder();
+
+            daoRu = daoMaster.newSession().getTblVietRUDao();
+            qbRu = daoRu.queryBuilder();
+
+            if (qbRu != null && qbRu.list().size() > 0) {
+                for(tblVietRU ru : qbRu.list()){
+                    String []strVi;
+//                    ULog.i(this, "phrase: " + ru.getVi());
+                    strVi = ru.getVi().replaceAll("!", "").replaceAll("\\?", "").replaceAll("[.]", "").replaceAll(",", "").replaceAll("<u>", "").replaceAll("</u>", "").toLowerCase().toString().split(" ");
+                    for(String word : strVi){
+                        qb = dao.queryBuilder();
+                        qb.where(tblMapNameDao.Properties.Filename.eq(word));
+                        if(qb.list().size()==0){
+                            ULog.i(this, "***************************** word = " + word);
+                        }
+                    }
+
+                }
+            } else {
+                ULog.i(TAG, "testWord NO data ");
+            }
+
+        } catch (Exception e) {
+            ULog.e(TAG, "update fail error:" + e.getMessage());
+        }
+    }
 
 	private void testFunction() {
 		byte[] arrB;

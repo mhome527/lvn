@@ -11,6 +11,7 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Locale;
 
 import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.query.QueryBuilder;
@@ -44,6 +45,9 @@ public class LearnWordsActivity extends BaseActivity implements OnClickListener 
         tvOther = getViewChild(R.id.tvOther);
         setListenerView(R.id.btnSpeak, this);
         setInitData();
+
+        Utility.setScreenNameGA("LearnWordsActivity - lang:" + Locale.getDefault().getLanguage());
+
     }
 
     @Override
@@ -77,6 +81,13 @@ public class LearnWordsActivity extends BaseActivity implements OnClickListener 
 //            lang = tmp;
 //            new LoadData().execute();
 //        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (progressDialog != null && progressDialog.isShowing())
+            progressDialog.dismiss();
     }
 
     @Override
@@ -162,14 +173,18 @@ public class LearnWordsActivity extends BaseActivity implements OnClickListener 
             super.onPostExecute(param);
              LearnWordAdapter adapter;
 
-            if (!isFinishing()) {
+            if (progressDialog != null && progressDialog.isShowing())
                 progressDialog.dismiss();
+
+            if (isFinishing()) {
+                return;
             }
             if (lstData != null && lstData.size() > 0) {
                 adapter = new LearnWordAdapter(LearnWordsActivity.this, lstData, lang);
                 gridWord.setAdapter(adapter);
                 setDefaultText(0);
-            }
+            }else
+                startActivity2(MainActivity.class);
         }
 
     }

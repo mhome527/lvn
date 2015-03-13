@@ -23,7 +23,6 @@ import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.query.QueryBuilder;
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.adapter.SearchAllAdapter;
-import teach.vietnam.asia.entity.DaoMaster;
 import teach.vietnam.asia.sound.AudioPlayer;
 import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.ULog;
@@ -35,11 +34,8 @@ public class SearchAllActivity extends BaseActivity implements OnClickListener {
     private ListView lstSearch;
     private EditText edtSearch;
     private SearchAllAdapter adapter;
-    //    private tblVietDao dao;
-    private DaoMaster daoMaster;
     private ProgressDialog progressDialog;
     private AudioPlayer audio;
-//    private String lang;
 
     @Override
     protected int getViewLayoutId() {
@@ -53,6 +49,8 @@ public class SearchAllActivity extends BaseActivity implements OnClickListener {
         audio = new AudioPlayer(SearchAllActivity.this);
 
         setInitData();
+
+        Utility.setScreenNameGA("SearchAllActivity - lang:" + Locale.getDefault().getLanguage());
 
     }
 
@@ -81,6 +79,13 @@ public class SearchAllActivity extends BaseActivity implements OnClickListener {
         super.onResume();
 //        lang = SearchAllActivity.this.getString(R.string.language);
 //        new LoadData().execute();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (progressDialog != null && progressDialog.isShowing())
+            progressDialog.dismiss();
     }
 
     @Override
@@ -113,8 +118,9 @@ public class SearchAllActivity extends BaseActivity implements OnClickListener {
 
             @Override
             public void afterTextChanged(Editable arg0) {
-                String text = edtSearch.getText().toString().toLowerCase(Locale.getDefault());
-                adapter.filter(text);
+                String text = edtSearch.getText().toString().toLowerCase();
+                if (adapter != null)
+                    adapter.filter(text);
             }
 
             @Override
@@ -196,13 +202,18 @@ public class SearchAllActivity extends BaseActivity implements OnClickListener {
         protected void onPostExecute(List lstData) {
             super.onPostExecute(lstData);
 
-            if (!isFinishing()) {
+            if (progressDialog != null && progressDialog.isShowing())
                 progressDialog.dismiss();
-            }
+
+            if (isFinishing())
+                return;
+
             if (lstData != null && lstData.size() > 0) {
                 adapter = new SearchAllAdapter(SearchAllActivity.this, lstData);
                 lstSearch.setAdapter(adapter);
                 // adapter.notifyDataSetChanged();
+            }else{
+                startActivity2(MainActivity.class);
             }
         }
 

@@ -7,10 +7,13 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 
+import java.util.Locale;
+
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.adapter.ColorAdapter;
 import teach.vietnam.asia.sound.AudioPlayer;
 import teach.vietnam.asia.utils.ULog;
+import teach.vietnam.asia.utils.Utility;
 
 public class ColorActivity extends BaseActivity implements OnClickListener {
 
@@ -27,7 +30,10 @@ public class ColorActivity extends BaseActivity implements OnClickListener {
 	@Override
 	protected void initView(Bundle savedInstanceState) {
 		initData();
-	}
+
+        Utility.setScreenNameGA("ColorActivity - lang:" + Locale.getDefault().getLanguage());
+
+    }
 
 	private void initData() {
 //		tvColor = getViewChild(R.id.tvColor);

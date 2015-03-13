@@ -89,7 +89,7 @@ public class LearnRecoginzeFragment extends BaseFragment {
         setInitData();
 
         /////GA
-        Utility.setScreenNameGA(LearnRecoginzeFragment.class.getSimpleName());
+//        Utility.setScreenNameGA(LearnRecoginzeFragment.class.getSimpleName());
 
     }
 

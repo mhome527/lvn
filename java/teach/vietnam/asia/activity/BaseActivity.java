@@ -19,11 +19,10 @@ import teach.vietnam.asia.R;
 import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.Prefs;
 import teach.vietnam.asia.utils.ULog;
-import teach.vietnam.asia.utils.Utility;
 
 public abstract class BaseActivity extends Activity implements OnClickListener {
     public static Prefs pref;
-    public String lang = "en";
+    public String lang = "";
     private String tag = BaseActivity.class.getSimpleName();
     private View viewMain;
     private RelativeLayout rlHome;
@@ -122,7 +121,7 @@ public abstract class BaseActivity extends Activity implements OnClickListener {
             reloadData();
         }
         // GA
-        Utility.setScreenNameGA(this.getClass().getSimpleName() + " - lang:" + lang);
+//        Utility.setScreenNameGA(this.getClass().getSimpleName() + " - lang:" + lang);
 
     }
 

@@ -4,7 +4,7 @@ import teach.vietnam.asia.BuildConfig;
 
 public class Constant {
 
-    final static public boolean isMyDebug = true;
+//    final static public boolean isMyDebug = true;
     // ////////
     final static public boolean isPro;
     final static public String PACKAGE_VOICE = "market://details?id=com.google.android.voicesearch";
@@ -19,15 +19,6 @@ public class Constant {
     // final static public String APP_TOCKEN = "ukTwK3tqg4YAAAAAAAAQTK0gVjiMjB5P_vrpMab3zHhmqNGEu_OVPdkYBKXvsavp";
 
     public static final String DB_NAME = "VN.db";
-//	public static final String KEY_ORG = "origins";
-//	public static final String KEY_DES = "destinations";
-//	public static String HCM = "HCM";
-//	public static String HANNOI = "HANOI2";
-
-//	 public static String JSON_WORDS_NAME = "VN.txt";
-//	 public static String JSON_MAPNAME_NAME = "MapName.txt";
-//	 public static String JSON_WORDS_NAME = "VN.data";
-//	 public static String JSON_MAPNAME_NAME = "MapName.data";
 
     //    public static final String JSON_WORDS_NAME;
     public static final String JSON_RECOGNIZE_NAME;
@@ -52,40 +43,39 @@ public class Constant {
     public static final String IT = "it";
     public static final String EN = "en";
 
+    public static final String REC_JA = "rec_ja.txt";
+    public static final String REC_KO = "rec_ko.txt";
+    public static final String REC_RU = "rec_ru.txt";
+    public static final String REC_FR = "rec_fr.txt";
+    public static final String REC_ES = "rec_es.txt";
+    public static final String REC_IT = "rec_it.txt";
+    public static final String REC_EN = "rec_en.txt";
+
     static {
-        if (isMyDebug) {
-//            JSON_WORDS_NAME = "VN.txt";
+//        if (isMyDebug) {
             JSON_RECOGNIZE_NAME = "recognize.txt";
             JSON_MAPNAME_NAME = "MapName.txt";
 
             FILE_JA = "ja.txt";
             FILE_KO = "ko.txt";
             FILE_RU = "ru.txt";
-//            FILE_FR = "fr.txt";
-//            FILE_ES = "es.txt";
-//            FILE_IT = "it.txt";
+            FILE_FR = "fr.txt";
+            FILE_ES = "es.txt";
+            FILE_IT = "it.txt";
             FILE_EN = "en.txt";
 
-//            FILE_JA = "en.txt";
-//            FILE_KO = "en.txt";
-//            FILE_RU = "en.txt";
-            FILE_FR = "en.txt";
-            FILE_ES = "en.txt";
-            FILE_IT = "en.txt";
-//            FILE_EN = "en.txt";
-        } else {
-//            JSON_WORDS_NAME = "VN.data";
-            JSON_RECOGNIZE_NAME = "recognize.txt";
-            JSON_MAPNAME_NAME = "MapName.data";
-
-            FILE_JA = "ja.data";
-            FILE_KO = "ko.data";
-            FILE_RU = "ru.data";
-            FILE_FR = "fr.data";
-            FILE_ES = "es.data";
-            FILE_IT = "it.data";
-            FILE_EN = "en.data";
-        }
+//        } else {
+//            JSON_RECOGNIZE_NAME = "recognize.txt";
+//            JSON_MAPNAME_NAME = "MapName.data";
+//
+//            FILE_JA = "ja.data";
+//            FILE_KO = "ko.data";
+//            FILE_RU = "ru.data";
+//            FILE_FR = "fr.data";
+//            FILE_ES = "es.data";
+//            FILE_IT = "it.data";
+//            FILE_EN = "en.data";
+//        }
 
 
 //        if (Utility.getMacAddress(MyApplication.getInstance()).equals(macAllow))
@@ -99,7 +89,7 @@ public class Constant {
 
     public static final String KEY_UPDATE = "db_update_1";
     public static final String KEY_SOUND = "key_sound";
-    public static final String VALUE_SOUND = "sound_2"; //gia tri tang khi file Mapname.txt thay doi.
+    public static final String VALUE_SOUND = "sound_3"; //gia tri tang khi file Mapname.txt thay doi.
     //
 //	// /////////
 //	public static final String COLUMN_SOUND = tblMapNameDao.Properties.Sound.columnName;
@@ -120,17 +110,7 @@ public class Constant {
 //		else
 //			FOLDER_NAME = "/Bus/";
 //	}
-//	final static public String JSON_AD = "ad.json";
-//	final static public String JSON_BUS_HCM = "HCM";
-//	final static public String JSON_BUS_HN = "HANOI2";
-//	final static public String CLEAR_CACHE_HCM = "clear_cache_HCM";
-//	final static public String CLEAR_CACHE_HN = "clear_cache_HN";
-//
-//	final static public String PRICE1_TAXI = "price1_taxi";
-//	final static public String PRICE2_TAXI = "price2_taxi";
-//	final static public String PRICE_BEGIN_TAXI = "price_begin_taxi";
-//	final static public String KM_TAXI = "km_taxi";
-//	static public int KM_DEFAULT = 31;
+
     public static final String INTENT_WORD = "intent_word";
     //	public static String GA_RECOGNIZE_LEARN_FRAGMENT = "LEARN RECOGNIZE";
 //	public static String GA_RECOGNIZE_TEST_FRAGMENT = "TEST RECOGNIZE";
@@ -139,8 +119,8 @@ public class Constant {
     public static boolean bLog = BuildConfig.DEBUG;
     public static String PREF_PAGE = "curr_page";
     // GA
-//    public static String KEY_ANALYSIS = "UA-54709178-3"; // daohuynh7
-    public static String KEY_ANALYSIS = "UA-54709178-4"; // daohuynh7-new
+    public static String KEY_ANALYSIS = "UA-54709178-3"; // daohuynh7
+//    public static String KEY_ANALYSIS = "UA-54709178-4"; // daohuynh7-new
 
 
 }

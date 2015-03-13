@@ -18,10 +18,10 @@ import teach.vietnam.asia.utils.Utility;
 public class MainActivity extends BaseActivity implements OnClickListener {
 
     private boolean isLoading = true;
-    private Class clsForm;
-    private int mKind = 0;
+//    private Class clsForm;
+//    private int mKind = 0;
     private boolean isClick = false;
-    private ProgressDialog progress;
+    public ProgressDialog progressDialog;
 
     @Override
     protected int getViewLayoutId() {
@@ -52,7 +52,7 @@ public class MainActivity extends BaseActivity implements OnClickListener {
         }
 
         setListenerView(R.id.btnShowDB, this);
-
+        Utility.setScreenNameGA("MainActivity - lang:" + lang);
 
     }
 
@@ -122,6 +122,7 @@ public class MainActivity extends BaseActivity implements OnClickListener {
             public void iFinishCreate() {
                 ULog.i(MainActivity.class, "Load data finish");
                 isLoading = false;
+                isClick = false;
             }
         }).execute();
     }
@@ -140,6 +141,13 @@ public class MainActivity extends BaseActivity implements OnClickListener {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (progressDialog != null && progressDialog.isShowing())
+            progressDialog.dismiss();
+    }
+
     private void moveToForm(Class cls) {
         moveToForm(cls, 0);
     }
@@ -149,14 +157,13 @@ public class MainActivity extends BaseActivity implements OnClickListener {
             return;
         isClick = true;
         if (isLoading) {
-            clsForm = cls;
-            mKind = kind;
-            if (progress != null)
-                progress.show();
+//            clsForm = cls;
+//            mKind = kind;
+            if (progressDialog != null)
+                progressDialog.show();
         } else {
             startActivity2(cls, kind);
         }
     }
-
 
 }

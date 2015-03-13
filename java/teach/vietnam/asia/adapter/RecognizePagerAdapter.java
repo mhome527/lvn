@@ -14,32 +14,27 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.query.QueryBuilder;
 import teach.vietnam.asia.R;
-import teach.vietnam.asia.activity.LearnWordsActivity;
-import teach.vietnam.asia.activity.MyApplication;
-import teach.vietnam.asia.entity.DaoMaster;
 import teach.vietnam.asia.entity.PracticeDetailEntity;
-import teach.vietnam.asia.entity.tblRecognize;
-import teach.vietnam.asia.entity.tblRecognizeDao;
 import teach.vietnam.asia.utils.ULog;
+import teach.vietnam.asia.utils.Utility;
 
 public class RecognizePagerAdapter extends PagerAdapter {
 
     private Activity activity;
     public ArrayList<PracticeDetailEntity> lstExceriese;
-    private DaoMaster daoMaster;
-    private tblRecognizeDao dao;
     private int num;
-    private int arrW[];
+    private String lang;
 
 
     public RecognizePagerAdapter(Activity activity, int num) {
+
         lstExceriese = new ArrayList<PracticeDetailEntity>();
         this.num = num;
-        arrW = new int[num];
         this.activity = activity;
-        // Log.i("HomeAdapter", "HomePagerAdapter...");
+        lang  = activity.getString(R.string.language);
     }
 
     @Override
@@ -77,7 +72,7 @@ public class RecognizePagerAdapter extends PagerAdapter {
 
         private int pos = 0;
         private ListView lstRecognize;
-        private List<tblRecognize> dataRecognize;
+        private List dataRecognize;
 
         public LoadData(ListView lstRecognize , int pos) {
             this.pos = pos;
@@ -86,29 +81,20 @@ public class RecognizePagerAdapter extends PagerAdapter {
 
         @Override
         protected Void doInBackground(Void... params) {
-            QueryBuilder<tblRecognize> qb;
-            String lang;
+            QueryBuilder qb;
+            AbstractDao dao;
+
             try {
-                daoMaster = ((MyApplication) activity.getApplication()).daoMaster;
-                dao = daoMaster.newSession().getTblRecognizeDao();
+                dao = Utility.getRecDao(activity, lang);
                 qb = dao.queryBuilder();
 //                lang = activity.getString(R.string.language);
 
+                qb.where(Utility.getREC_GroupID(lang).eq(pos + 1));
 
-                qb.where(tblRecognizeDao.Properties.Group_id.eq(pos + 1));
-//                if (lang.equals("ja")) {
-//                    qb.where(tblRecognizeDao.Properties.Group_id.eq(pos));
-//                } else if (lang.equals("ko")) {
-//                    qb.where(tblRecognizeDao.Properties.Group_id.eq(pos));
-//                } else {
-//                    qb.where(tblRecognizeDao.Properties.Group_id.eq(pos));
-//                }
-
-
-                ULog.i(this, "===data db:" + qb.list().size());
+                ULog.i(RecognizePagerAdapter.class, "===data db:" + qb.list().size());
                 dataRecognize = qb.list();
             } catch (Exception e) {
-                ULog.e(LearnWordsActivity.class, "load data error:" + e.getMessage());
+                ULog.e(RecognizePagerAdapter.class, "load data error:" + e.getMessage());
                 return null;
             }
             return null;

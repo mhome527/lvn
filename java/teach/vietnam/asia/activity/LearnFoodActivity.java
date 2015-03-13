@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher.ViewFactory;
 
 import java.util.List;
+import java.util.Locale;
 
 import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.query.QueryBuilder;
@@ -56,6 +57,8 @@ public class LearnFoodActivity extends BaseActivity implements ViewFactory, OnCl
 
         setInitData();
 
+        Utility.setScreenNameGA("LearnFoodActivity - lang:" + Locale.getDefault().getLanguage());
+
     }
 
     @Override
@@ -88,6 +91,13 @@ public class LearnFoodActivity extends BaseActivity implements ViewFactory, OnCl
 //            lang = tmp;
 //
 //        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (progressDialog != null && progressDialog.isShowing())
+            progressDialog.dismiss();
     }
 
     @Override
@@ -195,8 +205,13 @@ public class LearnFoodActivity extends BaseActivity implements ViewFactory, OnCl
         protected void onPostExecute(Void param) {
             super.onPostExecute(param);
             int resourceId;
-            if (!isFinishing()) {
+
+
+            if (progressDialog != null && progressDialog.isShowing())
                 progressDialog.dismiss();
+
+            if (isFinishing()) {
+                return;
             }
             if (lstData != null && lstData.size() > 0) {
                 resourceId = Utility.getResourcesID(LearnFoodActivity.this, Utility.getImg(lstData.get(0), lang));
@@ -208,6 +223,8 @@ public class LearnFoodActivity extends BaseActivity implements ViewFactory, OnCl
                 gallery.setAdapter(new LearnFoodAdapter(LearnFoodActivity.this, lstData, lang));
                 gallery.setSelection(2);
                 tvFood.setText(Utility.getVi(lstData.get(0), lang));
+            }else{
+                startActivity2(MainActivity.class);
             }
         }
 

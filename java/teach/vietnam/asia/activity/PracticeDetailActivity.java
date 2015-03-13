@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Locale;
 
 import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.query.QueryBuilder;
@@ -23,7 +24,6 @@ import teach.vietnam.asia.adapter.PracticeFooterAdapter;
 import teach.vietnam.asia.adapter.PracticePagerAdapter;
 import teach.vietnam.asia.entity.DaoMaster;
 import teach.vietnam.asia.entity.DaoSession;
-import teach.vietnam.asia.entity.tblVietENDao;
 import teach.vietnam.asia.sound.AudioPlayer;
 import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.ULog;
@@ -36,7 +36,7 @@ public class PracticeDetailActivity extends BaseActivity implements OnClickListe
     private GridView gridPage;
     private PracticePagerAdapter adapterPage;
     private PracticeFooterAdapter adapterFooter;
-    private tblVietENDao dao;
+    //    private tblVietENDao dao;
     private DaoMaster daoMaster;
     private ProgressDialog progressDialog;
     private AudioPlayer audio;
@@ -61,6 +61,9 @@ public class PracticeDetailActivity extends BaseActivity implements OnClickListe
 
         setListenerView(R.id.imgSpeak, this);
 //        setInitData();
+
+        Utility.setScreenNameGA("PracticeDetailActivity - lang:" + Locale.getDefault().getLanguage());
+
     }
 
     @Override
@@ -90,6 +93,13 @@ public class PracticeDetailActivity extends BaseActivity implements OnClickListe
         super.onResume();
 //        lang = PracticeDetailActivity.this.getString(R.string.language);
         setInitData();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (progressDialog != null && progressDialog.isShowing())
+            progressDialog.dismiss();
     }
 
     @Override
@@ -254,8 +264,8 @@ public class PracticeDetailActivity extends BaseActivity implements OnClickListe
                     gridPage.setAdapter(adapterFooter);
                     gridPage.setLayoutParams(new LinearLayout.LayoutParams(120 * max_level, LinearLayout.LayoutParams.WRAP_CONTENT));
                     gridPage.setNumColumns(max_level);
-
-                }
+                }else
+                    startActivity2(MainActivity.class);
 //                else {
 //                    PracticeDetailActivity.this.setVisibilityView(R.id.llLevel, false);
 //                }

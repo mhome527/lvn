@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.adapter.NumberAdapter;
@@ -46,6 +47,8 @@ public class NumberActivity extends BaseActivity implements OnClickListener {
 
         initData();
         // new LoadData().execute();
+        Utility.setScreenNameGA("NumberActivity - lang:" + Locale.getDefault().getLanguage());
+
     }
 
     @Override

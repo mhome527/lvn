@@ -8,16 +8,13 @@ import android.widget.ImageButton;
 import java.util.List;
 import java.util.Random;
 
+import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.query.QueryBuilder;
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.activity.LearnWordsActivity;
-import teach.vietnam.asia.activity.MyApplication;
 import teach.vietnam.asia.activity.RecognizeMainActicity;
 import teach.vietnam.asia.adapter.RecognizePagerTestAdapter;
 import teach.vietnam.asia.adapter.RecognizeTestListAdapter;
-import teach.vietnam.asia.entity.DaoMaster;
-import teach.vietnam.asia.entity.tblRecognize;
-import teach.vietnam.asia.entity.tblRecognizeDao;
 import teach.vietnam.asia.sound.AudioPlayer;
 import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.ULog;
@@ -29,23 +26,21 @@ public class TestRecognizeFragment extends BaseFragment implements RecognizeTest
     private static final String ARG_PAGER = "arg_pager";
 
     public int currPage = 0;
-    private DaoMaster daoMaster;
-    private tblRecognizeDao dao;
-    private List<tblRecognize> dataRecognize;
-
+    public int arrW[];
+    //    private DaoMaster daoMaster;
+//    private tblRecognizeDao dao;
+    private List dataRecognize;
     private ViewPager pagerRecognize;
     private RecognizePagerTestAdapter adapterPage;
     //    private DaoMaster daoMaster;
     private AudioPlayer audio;
     private int kind = 1;
-
     private MainMenuLayout mainLayout;
-
     private ImageButton imgLeft;
     private ImageButton imgRight;
     private int amount = 3;
     private int currAns = 0;
-    public int arrW[];
+    private String lang;
 //    private String currWord ="";
 
 
@@ -90,16 +85,17 @@ public class TestRecognizeFragment extends BaseFragment implements RecognizeTest
         setListenerView(R.id.imgLeft);
         setListenerView(R.id.imgRight);
         pagerRecognize = getViewChild(R.id.pagerRecognize);
-        setInitData();
+
 
         /////GA
-        Utility.setScreenNameGA(TestRecognizeFragment.class.getSimpleName());
+//        Utility.setScreenNameGA(TestRecognizeFragment.class.getSimpleName());
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
+        lang = getActivity().getString(R.string.language);
+        setInitData();
     }
 
     @Override
@@ -118,7 +114,7 @@ public class TestRecognizeFragment extends BaseFragment implements RecognizeTest
                 case R.id.imgSpeak:
 //                    audio.speakWord(currWord);
                     if (Constant.isPro || currPage < 10)
-                        audio.speakWord(dataRecognize.get(arrW[currAns]).getVn());
+                        audio.speakWord(Utility.getREC_VN(dataRecognize.get(arrW[currAns]), lang));
                     else
                         Utility.installPremiumApp(getActivity());
                     break;
@@ -179,8 +175,13 @@ public class TestRecognizeFragment extends BaseFragment implements RecognizeTest
 //                setCurrentWord(currAns);
                 ((RecognizeMainActicity) getActivity()).hideMenu();
 
-                ULog.i(TestRecognizeFragment.class, "arr:" + arrW[0] + "," + arrW[1] + "," + arrW[2] + "," + arrW[3]);
-                ULog.i(TestRecognizeFragment.class, "PageSelected currPage:" + currAns + "; " + dataRecognize.get(arrW[currAns]).getVn() + " ||| " + dataRecognize.get(0).getVn() + dataRecognize.get(1).getVn() + dataRecognize.get(2).getVn() + dataRecognize.get(3).getVn());
+//                ULog.i(TestRecognizeFragment.class, "arr:" + arrW[0] + "," + arrW[1] + "," + arrW[2] + "," + arrW[3]);
+//                ULog.i(TestRecognizeFragment.class, "PageSelected currPage:" + currAns + "; " +
+//                        Utility.getREC_VN(dataRecognize.get(arrW[currAns]), lang) + " ||| " +
+//                        Utility.getREC_VN(dataRecognize.get(0), lang) +
+//                        Utility.getREC_VN(dataRecognize.get(1), lang) +
+//                        Utility.getREC_VN(dataRecognize.get(2), lang) +
+//                        Utility.getREC_VN(dataRecognize.get(3), lang));
             }
 
             @Override
@@ -227,7 +228,7 @@ public class TestRecognizeFragment extends BaseFragment implements RecognizeTest
             arrW[value] = arrW[value2];
             arrW[value2] = tmp;
         }
-        ULog.i(TestRecognizeFragment.class, "arr:" + arrW[0] + "," + arrW[1] + "," + arrW[2] + "," + arrW[3]);
+//        ULog.i(TestRecognizeFragment.class, "arr:" + arrW[0] + "," + arrW[1] + "," + arrW[2] + "," + arrW[3]);
     }
 
 //    public void setCurrentWord(int currAns) {
@@ -236,14 +237,17 @@ public class TestRecognizeFragment extends BaseFragment implements RecognizeTest
 //    }
 
     private void loadData() {
-        QueryBuilder<tblRecognize> qb;
+        QueryBuilder qb;
+        AbstractDao dao;
         try {
-            daoMaster = ((MyApplication) getActivity().getApplication()).daoMaster;
-            dao = daoMaster.newSession().getTblRecognizeDao();
-            qb = dao.queryBuilder();
-            qb.where(tblRecognizeDao.Properties.Group_id.eq(currPage + 1));
+//            daoMaster = ((MyApplication) getActivity().getApplication()).daoMaster;
+//            dao = daoMaster.newSession().getTblRecognizeDao();
 
-            ULog.i(this, "===data db:" + qb.list().size());
+            dao = Utility.getRecDao(getActivity(), lang);
+            qb = dao.queryBuilder();
+            qb.where(Utility.getREC_GroupID(lang).eq(currPage + 1));
+
+            ULog.i(this, "===loadData data db:" + qb.list().size());
             dataRecognize = qb.list();
             amount = qb.list().size();
         } catch (Exception e) {
@@ -253,8 +257,8 @@ public class TestRecognizeFragment extends BaseFragment implements RecognizeTest
 
     @Override
     public String getCurrWord() {
-        ULog.i(RecognizePagerTestAdapter.class, "getCurrWord word:" + dataRecognize.get(arrW[currAns]).getVn());
-        return dataRecognize.get(arrW[currAns]).getVn();
+//        ULog.i(RecognizePagerTestAdapter.class, "getCurrWord word:" + dataRecognize.get(arrW[currAns]).getVn());
+        return Utility.getREC_VN(dataRecognize.get(arrW[currAns]), lang);
     }
 
 }

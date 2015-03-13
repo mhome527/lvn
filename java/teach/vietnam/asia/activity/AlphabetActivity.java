@@ -11,12 +11,14 @@ import android.widget.GridView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.adapter.AlphabetAdapter;
 import teach.vietnam.asia.entity.TblAlphabetEx;
 import teach.vietnam.asia.sound.AudioPlayer;
 import teach.vietnam.asia.utils.ULog;
+import teach.vietnam.asia.utils.Utility;
 
 public class AlphabetActivity extends BaseActivity implements OnClickListener {
     private GridView gridWords;
@@ -40,6 +42,8 @@ public class AlphabetActivity extends BaseActivity implements OnClickListener {
 
         initData();
         new LoadData().execute();
+
+        Utility.setScreenNameGA("AlphabetActivity - lang:" + Locale.getDefault().getLanguage());
     }
 
     @Override
