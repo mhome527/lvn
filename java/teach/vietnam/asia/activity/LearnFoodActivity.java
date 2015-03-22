@@ -224,7 +224,8 @@ public class LearnFoodActivity extends BaseActivity implements ViewFactory, OnCl
                 gallery.setSelection(2);
                 tvFood.setText(Utility.getVi(lstData.get(0), lang));
             }else{
-                startActivity2(MainActivity.class);
+//                startActivity2(MainActivity.class);
+                finish();
             }
         }
 

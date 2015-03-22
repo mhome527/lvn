@@ -192,9 +192,10 @@ public class SearchWordsActivity extends BaseActivity implements OnClickListener
                 adapter = new SearchAdapter(SearchWordsActivity.this, lstData);
                 lstSearch.setAdapter(adapter);
                 // adapter.notifyDataSetChanged();
-            }else
-                startActivity2(MainActivity.class);
-
+            }else {
+//                startActivity2(MainActivity.class);
+                finish();
+            }
         }
 
     }

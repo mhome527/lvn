@@ -380,6 +380,38 @@ public class Utility {
         dialog.show();
     }
 
+    /**
+     * Asking the permission for installing Premium app. If permission granted – sent user to Google Play
+     *
+     * @param context – Activity, that initialized installing
+     */
+    public static void confirmUpdate(final Context context) {
+
+        // creating a dialog asking user if he want to install the Voice Search
+        Dialog dialog = new AlertDialog.Builder(context).setMessage(context.getString(R.string.msg_update_app))
+                .setTitle(context.getString(R.string.msg_title_update))
+                .setPositiveButton(context.getString(R.string.update), new DialogInterface.OnClickListener() {
+
+                    // Install Button click handler
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            // creating an Intent for opening applications page in Google Play
+                            // Voice Search package name: com.google.android.voicesearch
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(Constant.PACKAGE_UPDATE));
+                            // setting flags to avoid going in application history (Activity call stack)
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+                            // sending an Intent
+                            context.startActivity(intent);
+                        } catch (Exception ex) {
+                            // if something going wrong doing nothing
+                        }
+                    }
+                }).setNegativeButton(context.getString(R.string.cancel), null).create();
+
+        dialog.show();
+    }
+
     public static void confirmCloseApp(final Activity activity) {
 
         // creating a dialog asking user if he want to install the Voice Search
@@ -505,20 +537,9 @@ public class Utility {
         }
     }
 
-//    public static String getFileNameData(Context context) {
-//        String filename = "";
-//        String lang;
-//        lang = context.getString(R.string.language);
-//        if(lang.equals())
-//
-//        return filename;
-//    }
-
     public static AbstractDao getDao(Context context, String lang) {
         AbstractDao dao;
         DaoMaster daoMaster = ((MyApplication) context.getApplicationContext()).daoMaster;
-//        daoMaster = ((MyApplication) activity.getApplicationContext()).daoMaster;
-
 
         if (lang.equals("ja"))
             dao = daoMaster.newSession().getTblVietJADao();

@@ -1,6 +1,5 @@
 package teach.vietnam.asia.fragment;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -28,7 +27,7 @@ public class LearnRecoginzeFragment extends BaseFragment {
     //    private DaoMaster daoMaster;
 //    private AudioPlayer audio;
     private int currPage = 0;
-    private ProgressDialog progress;
+//    private ProgressDialog progress;
     private Prefs pref;
     private ImageButton imgLeft;
     private ImageButton imgRight;

@@ -1,17 +1,17 @@
 package teach.vietnam.asia.activity;
 
 import android.os.Bundle;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-
-import java.util.Locale;
+import android.support.v4.view.ViewPager;
 
 import teach.vietnam.asia.R;
+import teach.vietnam.asia.adapter.GrammarDetailAdapter;
 import teach.vietnam.asia.utils.Constant;
-import teach.vietnam.asia.utils.ULog;
 import teach.vietnam.asia.utils.Utility;
 
 public class GrammarDetailActivity extends BaseActivity {
+
+    private ViewPager pagerGrammar;
+    private final String PREF_PAGER_GRAMMAR ="pager_grammar";
 
     @Override
     protected int getViewLayoutId() {
@@ -21,25 +21,33 @@ public class GrammarDetailActivity extends BaseActivity {
     @Override
     protected void initView(Bundle savedInstanceState) {
         int pos;
-        String []arrName;
-        String filename = "file:///android_asset/grammar/en-classifiers.html";
-        WebView webView = getViewChild(R.id.webView);
-        try {
-            WebSettings settings = webView.getSettings();
-            settings.setDefaultTextEncodingName("utf-8");
-            settings.setDefaultFontSize(20);
+        pagerGrammar = getViewChild(R.id.pagerGrammar);
 
-            pos = getIntent().getIntExtra(Constant.INTENT_POSITION, 0);
-            arrName = getResources().getStringArray(R.array.arr_name_grammar);
-            if (pos < arrName.length)
-                filename = "file:///android_asset/grammar/" + arrName[pos] +".html";
-            webView.loadUrl(filename);
+        pos = getIntent().getIntExtra(Constant.INTENT_POSITION, 0);
+        pagerGrammar.setAdapter(new GrammarDetailAdapter(this));
+        pagerGrammar.setCurrentItem(pos);
 
-            Utility.setScreenNameGA("GrammarDetailActivity - lang:" + Locale.getDefault().getLanguage());
+        int currPage = pref.getIntValue(0, PREF_PAGER_GRAMMAR);
+        pagerGrammar.setCurrentItem(currPage);
 
-        }catch (Exception e){
-            ULog.e(GrammarDetailActivity.class, "initView Error:" + e.getMessage());
-        }
+        pagerGrammar.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                pref.putIntValue(position, Constant.PREF_PAGE);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        Utility.setScreenNameGA("GrammarDetailActivity - lang:" + lang);
     }
 
     @Override

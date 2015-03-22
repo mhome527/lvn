@@ -264,8 +264,10 @@ public class PracticeDetailActivity extends BaseActivity implements OnClickListe
                     gridPage.setAdapter(adapterFooter);
                     gridPage.setLayoutParams(new LinearLayout.LayoutParams(120 * max_level, LinearLayout.LayoutParams.WRAP_CONTENT));
                     gridPage.setNumColumns(max_level);
-                }else
-                    startActivity2(MainActivity.class);
+                }else{
+//                    startActivity2(MainActivity.class);
+                    finish();
+                }
 //                else {
 //                    PracticeDetailActivity.this.setVisibilityView(R.id.llLevel, false);
 //                }

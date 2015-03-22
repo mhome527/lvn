@@ -3,7 +3,6 @@ package teach.vietnam.asia.db;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
-import teach.vietnam.asia.BuildConfig;
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.activity.MainActivity;
 import teach.vietnam.asia.activity.MyApplication;
@@ -87,6 +86,7 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
                 insertTable();
             } else {
                 ULog.i(DBDataLanguage.class, "Don't insert");
+                return false;
 //                Thread.sleep(1000);
             }
             // BaseActivity.pref.putStringValue(Constant.PREF_INIT, Constant.PREF_INIT);
@@ -112,7 +112,7 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
 
     }
 
-    private void insertTable() {
+    private void insertTable()throws Exception {
         if (lang.equals("ja"))
             insertDataJA();
         else if (lang.equals("ko"))
@@ -129,7 +129,7 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
             insertDataEN();
     }
 
-    private void insertDataEN() {
+    private void insertDataEN() throws Exception{
         EnEntity word;
         try {
             DaoSession mDaoSession = daoMaster.newSession();
@@ -159,12 +159,11 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
 
         } catch (Exception e) {
             ULog.e(DBDataLanguage.class, "Insert error:" + e.getMessage());
-            if (BuildConfig.DEBUG)
-                e.printStackTrace();
+            throw new Exception(e);
         }
     }
 
-    private void insertDataJA() {
+    private void insertDataJA() throws Exception{
         JaEntity word;
         try {
             DaoSession mDaoSession = daoMaster.newSession();
@@ -192,12 +191,11 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
 
         } catch (Exception e) {
             ULog.e(DBDataLanguage.class, "Insert error:" + e.getMessage());
-            if (BuildConfig.DEBUG)
-                e.printStackTrace();
+            throw new Exception(e);
         }
     }
 
-    private void insertDataKo() {
+    private void insertDataKo() throws Exception{
         KoEntity word;
         try {
             DaoSession mDaoSession = daoMaster.newSession();
@@ -226,12 +224,11 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
 
         } catch (Exception e) {
             ULog.e(DBDataLanguage.class, "Insert error:" + e.getMessage());
-            if (BuildConfig.DEBUG)
-                e.printStackTrace();
+            throw new Exception(e);
         }
     }
 
-    private void insertDataEs() {
+    private void insertDataEs() throws Exception{
         EsEntity word;
         try {
             DaoSession mDaoSession = daoMaster.newSession();
@@ -260,12 +257,11 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
 
         } catch (Exception e) {
             ULog.e(DBDataLanguage.class, "Insert error:" + e.getMessage());
-            if (BuildConfig.DEBUG)
-                e.printStackTrace();
+            throw new Exception(e);
         }
     }
 
-    private void insertDataFR() {
+    private void insertDataFR() throws Exception{
         FrEntity word;
         try {
             DaoSession mDaoSession = daoMaster.newSession();
@@ -294,12 +290,11 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
 
         } catch (Exception e) {
             ULog.e(DBDataLanguage.class, "Insert error:" + e.getMessage());
-            if (BuildConfig.DEBUG)
-                e.printStackTrace();
+            throw new Exception(e);
         }
     }
 
-    private void insertDataIT() {
+    private void insertDataIT() throws Exception{
         ItEntity word;
         try {
             DaoSession mDaoSession = daoMaster.newSession();
@@ -326,14 +321,13 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
 //            activity.progressDialog.dismiss();
             mDaoSession.clear();
 
-        } catch (Exception e) {
+        } catch (Exception e){
             ULog.e(DBDataLanguage.class, "Insert error:" + e.getMessage());
-            if (BuildConfig.DEBUG)
-                e.printStackTrace();
+            throw new Exception(e);
         }
     }
 
-    private void insertDataRU() {
+    private void insertDataRU() throws Exception{
         RuEntity word;
         try {
             DaoSession mDaoSession = daoMaster.newSession();
@@ -362,8 +356,7 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
 
         } catch (Exception e) {
             ULog.e(DBDataLanguage.class, "Insert error:" + e.getMessage());
-            if (BuildConfig.DEBUG)
-                e.printStackTrace();
+            throw new Exception(e);
         }
     }
 

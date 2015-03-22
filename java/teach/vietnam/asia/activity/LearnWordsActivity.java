@@ -116,7 +116,7 @@ public class LearnWordsActivity extends BaseActivity implements OnClickListener 
 
     }
 
-    private void setDefaultText(int postion){
+    private void setDefaultText(int postion) {
         tvViet.setText(Utility.getVi(lstData.get(postion), lang));
         tvOther.setText(Utility.getO1(lstData.get(postion), lang));
     }
@@ -171,7 +171,7 @@ public class LearnWordsActivity extends BaseActivity implements OnClickListener 
         @Override
         protected void onPostExecute(Void param) {
             super.onPostExecute(param);
-             LearnWordAdapter adapter;
+            LearnWordAdapter adapter;
 
             if (progressDialog != null && progressDialog.isShowing())
                 progressDialog.dismiss();
@@ -183,8 +183,10 @@ public class LearnWordsActivity extends BaseActivity implements OnClickListener 
                 adapter = new LearnWordAdapter(LearnWordsActivity.this, lstData, lang);
                 gridWord.setAdapter(adapter);
                 setDefaultText(0);
-            }else
-                startActivity2(MainActivity.class);
+            } else {
+//                startActivity2(MainActivity.class);
+                finish();
+            }
         }
 
     }

@@ -7,6 +7,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.google.analytics.tracking.android.Tracker;
 
+import teach.vietnam.asia.api.RequestManager;
 import teach.vietnam.asia.db.DbController;
 import teach.vietnam.asia.entity.DaoMaster;
 import teach.vietnam.asia.utils.Constant;
@@ -23,12 +24,13 @@ public class MyApplication extends Application {
 		super.onCreate();
 		mInstance = this;
 		// startService();
-		
-		
+
 		
 		daoMaster = new DaoMaster(DbController.init(MyApplication.this, true));
 		if (BaseActivity.pref == null)
 			BaseActivity.pref = new Prefs(MyApplication.this);
+		RequestManager.init(MyApplication.this);
+
 	}
 
 	public static synchronized MyApplication getInstance() {

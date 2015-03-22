@@ -1,35 +1,43 @@
 package teach.vietnam.asia.sound;
 
-import java.util.ArrayList;
-
-import teach.vietnam.asia.BuildConfig;
-import teach.vietnam.asia.activity.NumberActivity;
-import teach.vietnam.asia.utils.Common;
-import teach.vietnam.asia.utils.NumberToWord;
-import teach.vietnam.asia.utils.ULog;
-
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 
+import java.util.ArrayList;
+
+import teach.vietnam.asia.BuildConfig;
+import teach.vietnam.asia.utils.Common;
+import teach.vietnam.asia.utils.NumberToWord;
+import teach.vietnam.asia.utils.ULog;
+
 public class AudioPlayer {
     private ArrayList<MediaPlayer> mPlayerList;
     private Context context;
-    private AudioPlay facePlay;
+    //    private AudioPlay facePlay;
     public boolean isSlowly = false;
+    public IAudioPlayer iAudioPlayer;
+    String[] strSound;
 
-    public interface AudioPlay {
-        public void finishAudio(String fileName);
-    }
+//    public interface AudioPlay {
+//        void finishAudio(String fileName);
+//    }
 
     public AudioPlayer(Context context) {
         this.context = context;
     }
 
-    public AudioPlayer(Context context, AudioPlay facePlay) {
+    //    public AudioPlayer(Context context, AudioPlay facePlay, IAudioPlayer iAudioPlayer) {
+    public AudioPlayer(Context context, IAudioPlayer iAudioPlayer) {
         this.context = context;
-        this.facePlay = facePlay;
+//        this.facePlay = facePlay;
+        this.iAudioPlayer = iAudioPlayer;
     }
+
+//    public AudioPlayer(Context context, AudioPlay facePlay) {
+//        this.context = context;
+////        this.facePlay = facePlay;
+//    }
 
 //    public void stop() {
 //        if (mMediaPlayer != null) {
@@ -67,18 +75,35 @@ public class AudioPlayer {
         if (strWord.equals(""))
             return;
 
-        String[] strSound = strWord.split(" ");
-        speakWord(strSound);
+        strSound = strWord.split(" ");
+        speakWord();
 
     }
 
-    public void speakWord(String[] strSound) {
+    public void speakWord(String[] strWord) {
+
+        strSound = strWord;
+        speakWord();
+
+    }
+
+    public void speakWord(String strWord, IAudioPlayer iAudioPlayer) {
+
+        if (strWord.equals(""))
+            return;
+        this.iAudioPlayer = iAudioPlayer;
+        strSound = strWord.split(" ");
+        speakWord();
+
+    }
+
+    public void speakWord() {
         String soundName, number;
         String[] strNumber;
         ArrayList<String> listSound = new ArrayList<String>();
         for (String name : strSound) {
             soundName = Common.getNameSound(name.trim());
-            ULog.i(NumberActivity.class, "speakNumber name:" + name + ", sound:" + soundName);
+            ULog.i(AudioPlayer.class, "speakNumber name:" + name + ", sound:" + soundName);
             if (!soundName.equals(""))
                 listSound.add("sound/" + soundName + ".mp3");
             else {
@@ -123,17 +148,21 @@ public class AudioPlayer {
                                     if (isSlowly)
                                         Thread.sleep(500);
 //                                    stop();
-                                    if (facePlay != null)
-                                        facePlay.finishAudio(fileName);
+//                                    if (facePlay != null)
+//                                        facePlay.finishAudio(fileName);
 
                                     mPlayerList.remove(mp);
                                     mp.stop();
                                     mp.release();
                                     mp = null;
 
-                                    if (mPlayerList.size() > 0)
-//                                        mPlayerList.get(0).setOnPreparedListener(prepareSound);
+                                    if (mPlayerList.size() > 0) {
                                         mPlayerList.get(0).start();
+                                        if (iAudioPlayer != null && mPlayerList.size() == 1)
+                                            iAudioPlayer.showWord(strSound[strSound.length - 1], false);
+                                        else if (iAudioPlayer != null && strSound.length > mPlayerList.size())
+                                            iAudioPlayer.showWord(strSound[strSound.length - mPlayerList.size()], true);
+                                    }
 
                                 } catch (Exception e) {
                                     ULog.e(AudioPlayer.class, "!!!!!! Completion Error:" + e.getMessage());
@@ -161,7 +190,12 @@ public class AudioPlayer {
 
             }
 
+            if (iAudioPlayer != null) {
+                iAudioPlayer.showWord(strSound[0], true);
+            }
+
             mPlayerList.get(0).start();
+
 //            mPlayerList.get(0).setOnPreparedListener(prepareSound);
         } catch (Exception e) {
             ULog.e(AudioPlayer.class, "playSound Error: " + e.getMessage());
@@ -169,72 +203,5 @@ public class AudioPlayer {
                 e.printStackTrace();
         }
     }
-
-//    private MediaPlayer.OnPreparedListener prepareSound = new MediaPlayer.OnPreparedListener(){
-//
-//        @Override
-//        public void onPrepared(MediaPlayer mediaPlayer) {
-//            mediaPlayer.start();
-//        }
-//    };
-
-
-    //    @SuppressLint("NewApi")
-//    private void playSound(String[] arrSound) {
-//        try {
-//            stopAll();
-//            mPlayerList = new ArrayList<MediaPlayer>();
-//            mPlayerList.clear();
-//
-//            for (final String fileName : arrSound) {
-//                try {
-//                    if (!fileName.equals("")) {
-//                        MediaPlayer mPlayerT = new MediaPlayer();
-//
-//                        AssetFileDescriptor descriptor = context.getAssets().openFd(fileName);
-//                        mPlayerT.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
-//                        mPlayerT.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//
-//                            @Override
-//                            public void onCompletion(MediaPlayer mp) {
-//                                try {
-//                                    ULog.i(AudioPlayer.class, "onCompletion name:" + fileName);
-//                                    if (isSlowly)
-//                                        Thread.sleep(1000);
-//                                    stop();
-//                                    if (facePlay != null)
-//                                        facePlay.finishAudio(fileName);
-//
-//
-//                                } catch (Exception e) {
-//                                    ULog.e(AudioPlayer.class, "Completion Error:" + e.getMessage());
-//                                }
-//                            }
-//                        });
-//
-//                        descriptor.close();
-//
-//                        mPlayerT.prepare();
-//                        mPlayerT.setVolume(1f, 1f);
-//                        mPlayerT.setLooping(false);
-//
-//                        mPlayerList.add(mPlayerT);
-//                    }
-//
-//                } catch (Exception e) {
-//                    ULog.e(AudioPlayer.class, "playSound2 error:" + e.getMessage());
-//                }
-//
-//            }
-//            for (int i = 0; i < mPlayerList.size() - 1; i++) {
-//                mPlayerList.get(i).setNextMediaPlayer(mPlayerList.get(i + 1));
-//
-//            }
-//
-//            mPlayerList.get(0).start();
-//        } catch (Exception e) {
-//            ULog.e(AudioPlayer.class, "playSound Error: " + e.getMessage());
-//        }
-//    }
 
 }

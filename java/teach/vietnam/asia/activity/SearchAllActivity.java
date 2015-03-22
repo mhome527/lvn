@@ -213,7 +213,8 @@ public class SearchAllActivity extends BaseActivity implements OnClickListener {
                 lstSearch.setAdapter(adapter);
                 // adapter.notifyDataSetChanged();
             }else{
-                startActivity2(MainActivity.class);
+//                startActivity2(MainActivity.class);
+                finish();
             }
         }
 

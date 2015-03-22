@@ -22,6 +22,7 @@ import teach.vietnam.asia.R;
 import teach.vietnam.asia.activity.PhrasesActivity;
 import teach.vietnam.asia.activity.SearchWordsActivity;
 import teach.vietnam.asia.sound.AudioPlayer;
+import teach.vietnam.asia.sound.IAudioPlayer;
 import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.NumberToWord;
 import teach.vietnam.asia.utils.ULog;
@@ -36,12 +37,14 @@ public class PhrasesAdapter extends BaseAdapter implements SectionIndexer {
     private LayoutInflater layoutInflater;
     private String lang = "";
     private String[] alpha;
+//    IAudioPlayer iAudioPlayer;
 
     @SuppressLint("DefaultLocale")
-    public PhrasesAdapter(PhrasesActivity activity, List listData) {
+    public PhrasesAdapter(PhrasesActivity activity, List listData, IAudioPlayer iAudioPlayer) {
         int i = 0;
-        audio = new AudioPlayer(activity);
-
+        String word;
+        audio = new AudioPlayer(activity, iAudioPlayer);
+//        this.iAudioPlayer = iAudioPlayer;
         ULog.i(PhrasesAdapter.class, "PracticeAdapter locale:" + Locale.getDefault().getLanguage());
         this.activity = activity;
         this.listData = listData;
@@ -58,7 +61,9 @@ public class PhrasesAdapter extends BaseAdapter implements SectionIndexer {
 //        }
 
         for (Object viet : listData) {
-            alpha[i++] = Utility.getO1(viet, lang).replaceAll("<u>", "").replaceAll("</u>", "").split(" ")[0];
+//            alpha[i++] = Utility.getO1(viet, lang).replaceAll("<u>", "").replaceAll("</u>", "").split(" ")[0];
+            word = android.text.Html.fromHtml(Utility.getO1(viet, lang)).toString();
+            alpha[i++] = word.split(" ")[0];
         }
 
     }
@@ -81,6 +86,7 @@ public class PhrasesAdapter extends BaseAdapter implements SectionIndexer {
 
     private void resetAlphaSearch() {
         int i = 0;
+        String word;
         alpha = null;
         alpha = new String[listData.size()];
 
@@ -89,7 +95,9 @@ public class PhrasesAdapter extends BaseAdapter implements SectionIndexer {
 //        }
 
         for (Object viet : listData) {
-            alpha[i++] = Utility.getO1(viet, lang).replaceAll("<u>", "").replaceAll("</u>", "").split(" ")[0];
+//            alpha[i++] = Utility.getO1(viet, lang).replaceAll("<u>", "").replaceAll("</u>", "").split(" ")[0];
+            word = android.text.Html.fromHtml(Utility.getO1(viet, lang)).toString();
+            alpha[i++] = word.split(" ")[0];
         }
 
     }
@@ -117,13 +125,14 @@ public class PhrasesAdapter extends BaseAdapter implements SectionIndexer {
 //        phrases = String.format(listData.get(position).getVi(), "<u><font size=\"3\" color=\"blue\">"
 //                + listData.get(position).getDefault_word() + " </font></u>");
 
-        phrases = String.format(Utility.getVi(listData.get(position), lang), "<u><font size=\"3\" color=\"blue\">"
-                + Utility.getDefaultWord(listData.get(position), lang) + " </font></u>");
+        word_default = Utility.getDefaultWord(listData.get(position), lang);
+        phrases = String.format(Utility.getVi(listData.get(position), lang), "<u><font color=\"blue\">"
+                + word_default + " </font></u>");
 
         holder.tvViet.setText(Html.fromHtml(phrases));
         holder.tvOther.setText(Html.fromHtml(Utility.getO1(listData.get(position), lang)));
 
-        word_default = Utility.getDefaultWord(listData.get(position), lang);
+//        word_default = Utility.getDefaultWord(listData.get(position), lang);
 //        if (listData.get(position).getDefault_word() != null && !listData.get(position).getDefault_word().trim().equals("")) {
         if (word_default != null && !word_default.trim().equals("")) {
             holder.llWord.setTag(word_default);
@@ -153,9 +162,10 @@ public class PhrasesAdapter extends BaseAdapter implements SectionIndexer {
                 String word;
                 word = String.format(Utility.getVi(listData.get(position), lang), Utility.getDefaultWord(listData.get(position), lang));
                 ULog.i(PhrasesAdapter.class, "onClick word:" + word);
-                if (Constant.isPro)
-                    audio.speakWord(word.toLowerCase().replaceAll("\\?", "").replaceAll("\\.", "").replaceAll("!", "").replaceAll(",", "").replaceAll("<u>", "").replaceAll("</u>", ""));
-                else
+                if (Constant.isPro) {
+                    word = android.text.Html.fromHtml(word).toString();
+                    audio.speakWord(word.toLowerCase().replaceAll("\\?", "").replaceAll("\\.", "").replaceAll("!", "").replaceAll(",", ""));
+                }else
                     Utility.installPremiumApp(activity);
             }
         });
@@ -168,7 +178,6 @@ public class PhrasesAdapter extends BaseAdapter implements SectionIndexer {
     public void filter(String charText) {
         String word1, word2, wordVN;
         long number;
-//        tblVietEN tmp;
 
         try {
             charText = charText.toLowerCase(Locale.getDefault()).trim();
@@ -230,6 +239,8 @@ public class PhrasesAdapter extends BaseAdapter implements SectionIndexer {
     public void setSlowly(boolean b) {
         audio.isSlowly = b;
     }
+
+
 
     public class ViewHolder {
         TextView tvViet;

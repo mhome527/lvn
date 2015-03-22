@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +23,12 @@ import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.query.QueryBuilder;
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.adapter.PhrasesAdapter;
+import teach.vietnam.asia.sound.IAudioPlayer;
 import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.ULog;
 import teach.vietnam.asia.utils.Utility;
 
-public class PhrasesActivity extends BaseActivity implements OnClickListener {
+public class PhrasesActivity extends BaseActivity implements OnClickListener, IAudioPlayer {
     public static final int REQUEST_CODE_SEARCH = 500;
     private final int REQUEST_CODE_SPEECH_INPUT = 1000;
     public boolean isClick = false;
@@ -36,7 +39,7 @@ public class PhrasesActivity extends BaseActivity implements OnClickListener {
     private PhrasesAdapter adapter;
     private List lstData;
     private CheckBox ckbSpeed;
-//    private String lang = "";
+    private TextView tvhint;
 
 
     @Override
@@ -49,6 +52,7 @@ public class PhrasesActivity extends BaseActivity implements OnClickListener {
         lstPhrases = getViewChild(R.id.lstPhrases);
         edtSearch = getViewChild(R.id.edtSearch);
         ckbSpeed = getViewChild(R.id.ckbSpeed);
+        tvhint = getViewChild(R.id.tvHint);
 
         edtSearch.clearFocus();
         // tvText1.setText(Html
@@ -128,13 +132,7 @@ public class PhrasesActivity extends BaseActivity implements OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
-        String langTmp;
         isClick = false;
-//        langTmp = PhrasesActivity.this.getString(R.string.language);
-//        if (lang.equals("") || !langTmp.equals(lang)) {
-//            lang = langTmp;
-//            new LoadData().execute();
-//        }
     }
 
     @Override
@@ -175,10 +173,23 @@ public class PhrasesActivity extends BaseActivity implements OnClickListener {
         });
     }
 
-//	private void speakWord() {
-//		speakWord(tvViet.getText().toString());
-//	}
+    @Override
+    public void showWord(String word, boolean visible) {
+        if (!isFinishing()) {
+            if (visible)
+                tvhint.setVisibility(View.VISIBLE);
+            else {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        tvhint.setVisibility(View.GONE);
+                    }
+                }, 1000);
+            }
 
+            tvhint.setText(word);
+        }
+    }
 
     private class LoadData extends AsyncTask<Void, Void, Void> {
 
@@ -202,10 +213,6 @@ public class PhrasesActivity extends BaseActivity implements OnClickListener {
             AbstractDao dao;
 
             try {
-//                daoMaster = ((MyApplication) getApplication()).daoMaster;
-//                dao = daoMaster.newSession().getTblVietDao();
-//                qb = dao.queryBuilder();
-
                 dao = Utility.getDao(PhrasesActivity.this, lang);
                 qb = dao.queryBuilder();
 
@@ -230,15 +237,15 @@ public class PhrasesActivity extends BaseActivity implements OnClickListener {
                 progressDialog.dismiss();
 
             if (isFinishing()) {
-               return;
+                return;
             }
             if (lstData != null && lstData.size() > 0) {
                 ULog.i(PhrasesActivity.this, "load data size:" + lstData.size());
-                adapter = new PhrasesAdapter(PhrasesActivity.this, lstData);
+                adapter = new PhrasesAdapter(PhrasesActivity.this, lstData, PhrasesActivity.this);
                 lstPhrases.setAdapter(adapter);
-            } else{
+            } else {
                 ULog.e(PhrasesActivity.class, "Load data Error");
-                startActivity2(MainActivity.class);
+                finish();
             }
         }
 

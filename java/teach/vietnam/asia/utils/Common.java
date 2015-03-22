@@ -1,22 +1,23 @@
 package teach.vietnam.asia.utils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import teach.vietnam.asia.BuildConfig;
-import teach.vietnam.asia.entity.DaoMaster;
-import teach.vietnam.asia.activity.MyApplication;
-import teach.vietnam.asia.entity.tblMapName;
-import teach.vietnam.asia.entity.tblMapNameDao;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import com.google.gson.Gson;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+
 import de.greenrobot.dao.query.QueryBuilder;
+import teach.vietnam.asia.BuildConfig;
+import teach.vietnam.asia.activity.MyApplication;
+import teach.vietnam.asia.entity.DaoMaster;
+import teach.vietnam.asia.entity.tblMapName;
+import teach.vietnam.asia.entity.tblMapNameDao;
 
 public class Common {
 	/**
@@ -71,76 +72,6 @@ public class Common {
 		}
 		return obj;
 	}
-
-	// public static Object getObjectJson(Context context, Class<?> cls, String name) {
-	// Object obj = null;
-	// try {
-	// Reader reader = new InputStreamReader(context.getAssets().open(name));
-	// Gson gson = new Gson();
-	// obj = gson.fromJson(reader, cls);
-	// } catch (Exception e) {
-	// ULog.e("Common", "getObjectJson 2 Error:" + e.getMessage());
-	// }
-	// return obj;
-	// }
-
-	// public static clsListData getDataHCM(Context context) {
-	// clsListData obj = null;
-	// try {
-	// Reader reader = new InputStreamReader(context.getAssets().open("HCM"));
-	// Gson gson = new Gson();
-	// obj = gson.fromJson(reader, clsListData.class);
-	// } catch (Exception e) {
-	// ULog.e("Common", "getObjectJson 2 Error:" + e.getMessage());
-	// }
-	// return obj;
-	// }
-
-	// public static clsListData getDataBus(Context context, String name) {
-	// clsListData obj = null;
-	// try {
-	// ULog.i("Common", "getDataBus:" + name);
-	//
-	// //get data from sdcard
-	// obj = (clsListData) Common.getObjectJsonPath(clsListData.class, context.getCacheDir().getAbsoluteFile() + "/"
-	// + name);
-	// if (obj != null) {
-	// return obj;
-	// } else {
-	// //get data from asset
-	// Reader reader = new InputStreamReader(context.getAssets().open(name));
-	// Gson gson = new Gson();
-	// obj = gson.fromJson(reader, clsListData.class);
-	// }
-	// } catch (Exception e) {
-	// ULog.e("Common", "getObjectJson 2 Error:" + e.getMessage());
-	// }
-	// return obj;
-	// }
-	//
-	// public static clsListName getNameHCM(Context context) {
-	// clsListName obj = null;
-	// try {
-	// Reader reader = new InputStreamReader(context.getAssets().open("listStreet"));
-	// Gson gson = new Gson();
-	// obj = gson.fromJson(reader, clsListName.class);
-	// } catch (Exception e) {
-	// ULog.e("Common", "getObjectJson 2 Error:" + e.getMessage());
-	// }
-	// return obj;
-	// }
-	//
-	// public static clsListName getListName(Context context, String listStreet) {
-	// clsListName obj = null;
-	// try {
-	// Reader reader = new InputStreamReader(context.getAssets().open(listStreet));
-	// Gson gson = new Gson();
-	// obj = gson.fromJson(reader, clsListName.class);
-	// } catch (Exception e) {
-	// ULog.e("Common", "getObjectJson 2 Error:" + e.getMessage());
-	// }
-	// return obj;
-	// }
 
 	public static Boolean isNetAvailable(Context con) {
 
