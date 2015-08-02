@@ -11,6 +11,7 @@ import teach.vietnam.asia.activity.RecognizeMainActicity;
 import teach.vietnam.asia.adapter.RecognizePagerAdapter;
 import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.Prefs;
+import teach.vietnam.asia.utils.ULog;
 import teach.vietnam.asia.utils.Utility;
 
 public class LearnRecoginzeFragment extends BaseFragment {
@@ -164,6 +165,8 @@ public class LearnRecoginzeFragment extends BaseFragment {
     private void setInitData() {
 //        lang = RecognizeActivity.this.getString(R.string.language);
 //        audio = new AudioPlayer(getActivity());
+        ULog.i("fragmentLearnRec", "setInitData...");
+
         if (pref == null)
             pref = new Prefs(getActivity());
         pagerRecognize.setPageMargin(-60);

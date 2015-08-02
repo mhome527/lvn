@@ -31,7 +31,7 @@ public class ColorActivity extends BaseActivity implements OnClickListener {
 	protected void initView(Bundle savedInstanceState) {
 		initData();
 
-        Utility.setScreenNameGA("ColorActivity - lang:" + Locale.getDefault().getLanguage());
+        Utility.setScreenNameGA("ColorActivity");
 
     }
 

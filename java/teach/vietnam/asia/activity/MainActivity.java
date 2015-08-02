@@ -1,5 +1,6 @@
 package teach.vietnam.asia.activity;
 
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,7 +12,9 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.android.volley.VolleyError;
 
@@ -22,19 +25,20 @@ import teach.vietnam.asia.BuildConfig;
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.api.InfoAppAPI;
 import teach.vietnam.asia.db.AndroidDatabaseManager;
-import teach.vietnam.asia.db.DBDataLanguage;
 import teach.vietnam.asia.entity.InfoAppEntity;
+import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.ULog;
 import teach.vietnam.asia.utils.Utility;
 
 public class MainActivity extends BaseActivity implements OnClickListener {
 
-    private boolean isLoading = true;
+    //    private boolean isLoading = true;
     //    private Class clsForm;
 //    private int mKind = 0;
     private boolean isClick = false;
     public ProgressDialog progressDialog;
     private final int NOTIFICATION_ID = 111;
+    private final String LANGUAGE = "language";
 
     @Override
     protected int getViewLayoutId() {
@@ -57,6 +61,7 @@ public class MainActivity extends BaseActivity implements OnClickListener {
         setListenerView(R.id.btnDialog, this);
         setListenerView(R.id.btnPractice, this);
         setListenerView(R.id.btnGrammar, this);
+        setListenerView(R.id.btnSetting, this);
 
         ////test db
         if (BuildConfig.DEBUG) {
@@ -65,11 +70,19 @@ public class MainActivity extends BaseActivity implements OnClickListener {
         }
 
         setListenerView(R.id.btnShowDB, this);
-        Utility.setScreenNameGA("MainActivity - lang:" + lang);
+        Utility.setScreenNameGA("MainActivity");
 
         //check update version
-        checkUpdate();
+//        checkUpdate();
 
+        // choice language
+        if (pref != null && pref.getBooleanValue(false, LANGUAGE)) {
+            showDialogLanguage();
+        }
+
+        //insert db
+//        if(BuildConfig.DEBUG)
+//            InsertDB();
     }
 
     @Override
@@ -117,9 +130,9 @@ public class MainActivity extends BaseActivity implements OnClickListener {
             case R.id.btnShowDB:
                 startActivity2(AndroidDatabaseManager.class);
                 break;
-//		case R.id.btnSearch:
-//			startActivity2(SearchAllActivity.class);
-//			break;		
+            case R.id.btnSetting:
+                showDialogLanguage();
+                break;
         }
 
         super.onClick(v);
@@ -129,18 +142,21 @@ public class MainActivity extends BaseActivity implements OnClickListener {
     protected void onResume() {
         super.onResume();
         isClick = false;
-        isLoading = true;
+//        isLoading = true;
         Locale current = this.getResources().getConfiguration().locale;
         ULog.i(MainActivity.class, "resume ========================= lang:" + current.toString().toLowerCase());
 
-        new DBDataLanguage(this, new DBDataLanguage.ICreateTable() {
-            @Override
-            public void iFinishCreate() {
-                ULog.i(MainActivity.class, "Load data finish");
-                isLoading = false;
-                isClick = false;
-            }
-        }).execute();
+//        new DBDataLanguage(this, new DBDataLanguage.ICreateTable() {
+//            @Override
+//            public void iFinishCreate() {
+//                ULog.i(MainActivity.class, "Load data finish");
+//                isLoading = false;
+//                isClick = false;
+//            }
+//        }).execute();
+
+//        if(BuildConfig.DEBUG)
+//            InsertDB();
     }
 
 
@@ -151,10 +167,10 @@ public class MainActivity extends BaseActivity implements OnClickListener {
 
     @Override
     public void onBackPressed() {
-        if (!isLoading) {
-            Utility.confirmCloseApp(MainActivity.this);
+//        if (!isLoading) {
+        Utility.confirmCloseApp(MainActivity.this);
 //            super.onBackPressed();
-        }
+//        }
     }
 
     @Override
@@ -172,15 +188,17 @@ public class MainActivity extends BaseActivity implements OnClickListener {
         if (isClick)
             return;
         isClick = true;
-        if (isLoading) {
+//        if (isLoading) {
 //            clsForm = cls;
 //            mKind = kind;
-            if (progressDialog != null)
-                progressDialog.show();
-        } else {
-            startActivity2(cls, kind);
-        }
+//            if (progressDialog != null)
+//                progressDialog.show();
+//        } else {
+        startActivity2(cls, kind);
+//        }
     }
+
+
 
     private void checkUpdate() {
         new InfoAppAPI<InfoAppEntity>(InfoAppEntity.class) {
@@ -254,5 +272,111 @@ public class MainActivity extends BaseActivity implements OnClickListener {
         NotificationManager manager = (NotificationManager) MainActivity.this.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(NOTIFICATION_ID, notification);
     }
+
+    private void showDialogLanguage() {
+        // custom dialog
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_language_layout);
+
+//        dialog.setCancelable(false);
+//        dialog.setTitle("Language");
+
+        Button dialogButton = (Button) dialog.findViewById(R.id.btnChangeLang);
+        // if button is clicked, close the custom dialog
+        dialogButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        LinearLayout llVietEnglish = (LinearLayout) dialog.findViewById(R.id.llVietEnglish);
+        LinearLayout llVietJapan = (LinearLayout) dialog.findViewById(R.id.llVietJapan);
+        LinearLayout llVietKorean = (LinearLayout) dialog.findViewById(R.id.llVietKorean);
+        LinearLayout llVietFrance = (LinearLayout) dialog.findViewById(R.id.llVietFrance);
+        LinearLayout llVietRussia = (LinearLayout) dialog.findViewById(R.id.llVietRussia);
+
+        llVietEnglish.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.lang = "en";
+                BaseActivity.pref.putStringValue("en", Constant.EN);
+                dialog.dismiss();
+            }
+        });
+
+        llVietJapan.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.lang = "ja";
+                BaseActivity.pref.putStringValue("ja", Constant.EN);
+                dialog.dismiss();
+            }
+        });
+
+        llVietKorean.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.lang = "ko";
+                BaseActivity.pref.putStringValue("ko", Constant.EN);
+                dialog.dismiss();
+            }
+        });
+
+        llVietFrance.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.lang = "fr";
+                BaseActivity.pref.putStringValue("fr", Constant.EN);
+                dialog.dismiss();
+            }
+        });
+
+        llVietRussia.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.lang = "ru";
+                BaseActivity.pref.putStringValue("ru", Constant.EN);
+                dialog.dismiss();
+            }
+        });
+
+        if(lang.equals("ja")) {
+            (dialog.findViewById(R.id.imgCheckEn)).setVisibility(View.INVISIBLE);
+            (dialog.findViewById(R.id.imgCheckJa)).setVisibility(View.VISIBLE);
+            (dialog.findViewById(R.id.imgCheckKo)).setVisibility(View.INVISIBLE);
+            (dialog.findViewById(R.id.imgCheckFr)).setVisibility(View.INVISIBLE);
+            (dialog.findViewById(R.id.imgCheckRu)).setVisibility(View.INVISIBLE);
+        }else if(lang.equals("ko")) {
+            (dialog.findViewById(R.id.imgCheckEn)).setVisibility(View.INVISIBLE);
+            (dialog.findViewById(R.id.imgCheckJa)).setVisibility(View.INVISIBLE);
+            (dialog.findViewById(R.id.imgCheckKo)).setVisibility(View.VISIBLE);
+            (dialog.findViewById(R.id.imgCheckFr)).setVisibility(View.INVISIBLE);
+            (dialog.findViewById(R.id.imgCheckRu)).setVisibility(View.INVISIBLE);
+        }else if(lang.equals("fr")) {
+            (dialog.findViewById(R.id.imgCheckEn)).setVisibility(View.INVISIBLE);
+            (dialog.findViewById(R.id.imgCheckJa)).setVisibility(View.INVISIBLE);
+            (dialog.findViewById(R.id.imgCheckKo)).setVisibility(View.INVISIBLE);
+            (dialog.findViewById(R.id.imgCheckFr)).setVisibility(View.VISIBLE);
+            (dialog.findViewById(R.id.imgCheckRu)).setVisibility(View.INVISIBLE);
+        }else if(lang.equals("ru")) {
+            (dialog.findViewById(R.id.imgCheckEn)).setVisibility(View.INVISIBLE);
+            (dialog.findViewById(R.id.imgCheckJa)).setVisibility(View.INVISIBLE);
+            (dialog.findViewById(R.id.imgCheckKo)).setVisibility(View.INVISIBLE);
+            (dialog.findViewById(R.id.imgCheckFr)).setVisibility(View.INVISIBLE);
+            (dialog.findViewById(R.id.imgCheckRu)).setVisibility(View.VISIBLE);
+        }else {
+            (dialog.findViewById(R.id.imgCheckEn)).setVisibility(View.VISIBLE);
+            (dialog.findViewById(R.id.imgCheckJa)).setVisibility(View.INVISIBLE);
+            (dialog.findViewById(R.id.imgCheckKo)).setVisibility(View.INVISIBLE);
+            (dialog.findViewById(R.id.imgCheckFr)).setVisibility(View.INVISIBLE);
+            (dialog.findViewById(R.id.imgCheckRu)).setVisibility(View.INVISIBLE);
+        }
+
+        dialog.show();
+    }
+
+
 
 }

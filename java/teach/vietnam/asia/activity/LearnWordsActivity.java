@@ -46,7 +46,7 @@ public class LearnWordsActivity extends BaseActivity implements OnClickListener 
         setListenerView(R.id.btnSpeak, this);
         setInitData();
 
-        Utility.setScreenNameGA("LearnWordsActivity - lang:" + Locale.getDefault().getLanguage());
+        Utility.setScreenNameGA("LearnWordsActivity");
 
     }
 

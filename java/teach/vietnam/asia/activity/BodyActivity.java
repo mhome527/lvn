@@ -1,5 +1,7 @@
 package teach.vietnam.asia.activity;
 
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,7 +32,7 @@ public class BodyActivity extends BaseActivity implements OnClickListener {
 		tvOther = getViewChild(R.id.tvOther);
 		initData();
 
-        Utility.setScreenNameGA("BodyActivity - lang:" + Locale.getDefault().getLanguage());
+        Utility.setScreenNameGA("BodyActivity");
 
     }
 
@@ -59,6 +61,8 @@ public class BodyActivity extends BaseActivity implements OnClickListener {
 		setListenerView(R.id.btnWrist, this);
 		setListenerView(R.id.btnHeel, this);
 		setListenerView(R.id.btnToes, this);
+
+		setData();
 	}
 
 	@Override
@@ -197,4 +201,52 @@ public class BodyActivity extends BaseActivity implements OnClickListener {
 		audio.speakWord(tvViet.getText().toString());
 	}
 
+	private void setData(){
+		Resources res = getResources();
+		Configuration conf = res.getConfiguration();
+//		Locale savedLocale = conf.locale;
+//		conf.locale =  Locale.ENGLISH;
+		if(lang.equals("ja"))
+			conf.locale =  new Locale("ja");
+		else if(lang.equals("ko"))
+			conf.locale =  new Locale("ko");
+		else if(lang.equals("fr"))
+			conf.locale =  new Locale("fr");
+		else if(lang.equals("ru"))
+			conf.locale = new Locale("ru");
+		else
+			conf.locale =  Locale.ENGLISH;
+
+		res.updateConfiguration(conf, null); // second arg null means don't chan
+
+//		((Button)getViewChild(R.id.btnHead)).setText(res.getString(R.string.head_vn));
+		getViewChild(R.id.btnHead).setTag(res.getString(R.string.head));
+		getViewChild(R.id.btnHair).setTag(res.getString(R.string.hair));
+		getViewChild(R.id.btnEyebrow).setTag(res.getString(R.string.eyebrow));
+		getViewChild(R.id.btnEye).setTag(res.getString(R.string.eye));
+		getViewChild(R.id.btnCheek).setTag(res.getString(R.string.cheek));
+		getViewChild(R.id.btnNeck).setTag(res.getString(R.string.neck));
+		getViewChild(R.id.btnChest).setTag(res.getString(R.string.chest));
+		getViewChild(R.id.btnArm).setTag(res.getString(R.string.arm));
+
+		getViewChild(R.id.btnHand).setTag(res.getString(R.string.hand));
+		getViewChild(R.id.btnknee).setTag(res.getString(R.string.knee));
+		getViewChild(R.id.btnFoot).setTag(res.getString(R.string.foot));
+		getViewChild(R.id.btnForehead).setTag(res.getString(R.string.forehead));
+		getViewChild(R.id.btnEar).setTag(res.getString(R.string.ear));
+		getViewChild(R.id.btnNose).setTag(res.getString(R.string.nose));
+		getViewChild(R.id.btnMouth).setTag(res.getString(R.string.mouth));
+		getViewChild(R.id.btnShoulder).setTag(res.getString(R.string.shoulder));
+		getViewChild(R.id.btnHip).setTag(res.getString(R.string.hip));
+
+		getViewChild(R.id.btnFinger).setTag(res.getString(R.string.fingers));
+		getViewChild(R.id.btnWrist).setTag(res.getString(R.string.wrist));
+		getViewChild(R.id.btnHeel).setTag(res.getString(R.string.heel));
+		getViewChild(R.id.btnToes).setTag(res.getString(R.string.toes));
+
+
+		tvOther.setText(getViewChild(R.id.btnHead).getTag().toString());
+		tvViet.setText(((Button) getViewChild(R.id.btnHead)).getText().toString());
+
+	}
 }

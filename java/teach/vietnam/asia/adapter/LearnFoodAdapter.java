@@ -61,6 +61,7 @@ public class LearnFoodAdapter extends BaseAdapter {
     @SuppressLint("InflateParams")
     public View getView(int index, View convertView, ViewGroup viewGroup) {
         int resourceId;
+        String strImage;
 
         if (convertView == null) {
             convertView = layoutInflater.inflate(R.layout.learn_food_item, null);
@@ -70,11 +71,12 @@ public class LearnFoodAdapter extends BaseAdapter {
         ImageView img = (ImageView) convertView.findViewById(R.id.imgFruit);
         img.setLayoutParams(new Gallery.LayoutParams(200, 250));
         img.setScaleType(ImageView.ScaleType.FIT_XY);
-
-        resourceId = Utility.getResourcesID(context, Utility.getImg(lstData.get(index), lang));
+        strImage = "f_" + Utility.getImg(lstData.get(index), lang);
+        resourceId = Utility.getResourcesID(context, strImage);
         if (resourceId > 0) {
             img.setImageResource(resourceId);
-            img.setTag(resourceId);
+//            img.setTag(resourceId);
+            img.setTag(Utility.getResourcesID(context, strImage + "_l"));
         } else
             ULog.e(LearnFoodAdapter.class, "dont load resource");
 

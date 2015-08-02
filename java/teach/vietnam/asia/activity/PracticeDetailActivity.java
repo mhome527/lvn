@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.Locale;
 
 import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.query.QueryBuilder;
@@ -62,7 +61,7 @@ public class PracticeDetailActivity extends BaseActivity implements OnClickListe
         setListenerView(R.id.imgSpeak, this);
 //        setInitData();
 
-        Utility.setScreenNameGA("PracticeDetailActivity - lang:" + Locale.getDefault().getLanguage());
+        Utility.setScreenNameGA("PracticeDetailActivity");
 
     }
 
@@ -91,7 +90,6 @@ public class PracticeDetailActivity extends BaseActivity implements OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-//        lang = PracticeDetailActivity.this.getString(R.string.language);
         setInitData();
     }
 

@@ -2,6 +2,7 @@ package teach.vietnam.asia.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.Locale;
 
 import teach.vietnam.asia.R;
+import teach.vietnam.asia.activity.BaseActivity;
+import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.NumberToWord;
 import teach.vietnam.asia.utils.ULog;
 import teach.vietnam.asia.utils.Utility;
@@ -30,6 +33,7 @@ public class SearchAllAdapter extends BaseAdapter implements SectionIndexer {
     private LayoutInflater layoutInflater;
     private String lang = "";
     private String[] alpha;
+    boolean modify = false;
 
     public SearchAllAdapter(Context context, List listData) {
         int i = 0;
@@ -41,7 +45,8 @@ public class SearchAllAdapter extends BaseAdapter implements SectionIndexer {
             ULog.i(SearchAllAdapter.class, "SearchAllAdapter");
             listData2.addAll(listData);
             layoutInflater = LayoutInflater.from(context);
-            lang = context.getString(R.string.language);
+//            lang = context.getString(R.string.language);
+            lang = BaseActivity.pref.getStringValue("en", Constant.EN);
 
             alpha = null;
             alpha = new String[listData.size()];
@@ -85,6 +90,7 @@ public class SearchAllAdapter extends BaseAdapter implements SectionIndexer {
         int resourceId;
         final ViewHolder holder;
         String phrases;
+
         if (view == null) {
             holder = new ViewHolder();
             view = layoutInflater.inflate(R.layout.search_item, null);
@@ -95,6 +101,9 @@ public class SearchAllAdapter extends BaseAdapter implements SectionIndexer {
         } else {
             holder = (ViewHolder) view.getTag();
         }
+
+        if(listData.size() <= position)
+            return view;
 
         holder.tvOther.setText(Html.fromHtml(Utility.getO1(listData.get(position), lang)));
 
@@ -107,8 +116,13 @@ public class SearchAllAdapter extends BaseAdapter implements SectionIndexer {
             holder.imgWord.setImageResource(resourceId);
             // holder.imgWord.setTag(resourceId);
         } else {
-            holder.imgWord.setImageResource(0);
-            ULog.i(SearchAllAdapter.class, "dont image load");
+            //truong hop hinh la food
+            resourceId = Utility.getResourcesID(context, "f_" + Utility.getImg(listData.get(position), lang));
+            if (resourceId > 0)
+                holder.imgWord.setImageResource(resourceId);
+            else
+                holder.imgWord.setImageResource(0);
+//            ULog.i(SearchAllAdapter.class, "dont image load");
         }
         return view;
     }
@@ -129,42 +143,54 @@ public class SearchAllAdapter extends BaseAdapter implements SectionIndexer {
 
     @SuppressLint("DefaultLocale")
     public void filter(String charText) {
-        String word1 = "", word2 = "";
-        long number;
-        Object tmp;
-        try {
-            charText = charText.toLowerCase(Locale.getDefault()).trim();
-            ULog.i(SearchAllAdapter.this, "filter key: " + charText);
-            listData.clear();
-            if (charText.length() == 0) {
-                listData.addAll(listData2);
-            } else {
-
-                for (Object vi : listData2) {
-                    word1 = Utility.getO1(vi, lang);
-                    word2 = Utility.getO2(vi, lang);
-                    if (word1.contains(charText) || charText.contains(word1)) {
-                        listData.add(vi);
-                    } else if (!word2.equals("") && (word2.contains(charText) || charText.contains(word2))) {
-                        listData.add(vi);
-                    }
-                }
-            }
-
-            if (listData.size() == 0) {
-                if (!charText.equals("")) {
-                    number = Utility.convertToLong(charText);
-                    if (number > -1) {
-                        tmp = Utility.getDataObject(lang, NumberToWord.getWordFromNumber(number), charText);
-                        listData.add(tmp);
-                    }
-                }
-            }
-            resetAlphaSearch();
-            notifyDataSetChanged();
-        } catch (Exception e) {
-            ULog.e(SearchAllAdapter.this, "filter error:" + e.getMessage());
-        }
+        if(!modify)
+            new ResetAdapter(charText).execute();
+//        String word1, word2, wordVN;
+//        long number;
+//        Object tmp;
+//        try {
+//            charText = charText.toLowerCase(Locale.getDefault()).trim();
+//            ULog.i(SearchAllAdapter.this, "filter key: " + charText);
+//            listData.clear();
+//            if (charText.length() == 0) {
+//                listData.addAll(listData2);
+//            } else {
+//
+//                for (Object vi : listData2) {
+//
+//                    wordVN = android.text.Html.fromHtml(Utility.getVi(vi, lang)).toString().toLowerCase();
+//
+//                    if (wordVN.contains(charText) || charText.contains(wordVN)) {
+//                        listData.add(vi);
+//                    } else {
+//                        word1 = android.text.Html.fromHtml(Utility.getO1(vi, lang)).toString().toLowerCase();
+//                        if (word1.contains(charText) || charText.contains(word1)) {
+//                            listData.add(vi);
+//                        } else {
+//                            word2 = android.text.Html.fromHtml(Utility.getO2(vi, lang)).toString().toLowerCase();
+//                            if (!word2.equals("") && (word2.contains(charText) || charText.contains(word2))) {
+//                                listData.add(vi);
+//                            }
+//                        }
+//                    }
+//
+//                }
+//            }
+//
+//            if (listData.size() == 0) {
+//                if (!charText.equals("")) {
+//                    number = Utility.convertToLong(charText);
+//                    if (number > -1) {
+//                        tmp = Utility.getDataObject(lang, NumberToWord.getWordFromNumber(number), charText);
+//                        listData.add(tmp);
+//                    }
+//                }
+//            }
+//            resetAlphaSearch();
+//            notifyDataSetChanged();
+//        } catch (Exception e) {
+//            ULog.e(SearchAllAdapter.this, "filter error:" + e.getMessage());
+//        }
     }
 
     @Override
@@ -186,6 +212,82 @@ public class SearchAllAdapter extends BaseAdapter implements SectionIndexer {
         TextView tvOther;
         TextView tvVn;
         ImageView imgWord;
+    }
+
+    public class ResetAdapter extends AsyncTask<Void, Void, Boolean>{
+        private String charText;
+        public ResetAdapter(String charText){
+            this.charText = charText;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            String word1, word2, wordVN;
+            long number;
+            Object tmp;
+            try {
+                if(modify)
+                    return false;
+                modify = true;
+                charText = charText.toLowerCase(Locale.getDefault()).trim();
+                ULog.i(SearchAllAdapter.this, "filter key: " + charText);
+                listData.clear();
+                if (charText.length() == 0) {
+                    listData.addAll(listData2);
+                } else {
+
+                    for (Object vi : listData2) {
+
+                        wordVN = android.text.Html.fromHtml(Utility.getVi(vi, lang)).toString().toLowerCase();
+
+                        if (wordVN.contains(charText) || charText.contains(wordVN)) {
+                            listData.add(vi);
+                        } else {
+                            word1 = android.text.Html.fromHtml(Utility.getO1(vi, lang)).toString().toLowerCase();
+                            if (word1.contains(charText) || charText.contains(word1)) {
+                                listData.add(vi);
+                            } else {
+                                word2 = android.text.Html.fromHtml(Utility.getO2(vi, lang)).toString().toLowerCase();
+                                if (!word2.equals("") && (word2.contains(charText) || charText.contains(word2))) {
+                                    listData.add(vi);
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+                if (listData.size() == 0) {
+                    if (!charText.equals("")) {
+                        number = Utility.convertToLong(charText);
+                        if (number > -1) {
+                            tmp = Utility.getDataObject(lang, NumberToWord.getWordFromNumber(number), charText);
+                            listData.add(tmp);
+                        }
+                    }
+                }
+//                resetAlphaSearch();
+//                notifyDataSetChanged();
+            } catch (Exception e) {
+                ULog.e(SearchAllAdapter.this, "filter error:" + e.getMessage());
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean b) {
+            super.onPostExecute(b);
+            try {
+                if (b) {
+                    resetAlphaSearch();
+                    SearchAllAdapter.this.notifyDataSetChanged();
+                }
+                modify = false;
+            }catch(Exception e){
+                ULog.e("SearchAllAdapter", "notify Error:" + e.getMessage());
+            }
+        }
     }
 
 }

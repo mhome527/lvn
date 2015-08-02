@@ -61,7 +61,7 @@ public class PhrasesActivity extends BaseActivity implements OnClickListener, IA
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         initData();
 
-        Utility.setScreenNameGA("PhrasesActivity - lang:" + lang);
+        Utility.setScreenNameGA("PhrasesActivity");
 
     }
 

@@ -52,7 +52,7 @@ public class SearchWordsActivity extends BaseActivity implements OnClickListener
 
         position = getIntent().getIntExtra(Constant.INTENT_POSITION, 0);
 
-        Utility.setScreenNameGA("SearchWordsActivity - lang:" + Locale.getDefault().getLanguage());
+        Utility.setScreenNameGA("SearchWordsActivity");
 
     }
 
@@ -90,7 +90,6 @@ public class SearchWordsActivity extends BaseActivity implements OnClickListener
     @Override
     protected void onResume() {
         super.onResume();
-//        lang = SearchWordsActivity.this.getString(R.string.language);
 
     }
 

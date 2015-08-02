@@ -15,7 +15,9 @@ import java.util.List;
 import java.util.Locale;
 
 import teach.vietnam.asia.R;
+import teach.vietnam.asia.activity.BaseActivity;
 import teach.vietnam.asia.entity.tblVietEN;
+import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.NumberToWord;
 import teach.vietnam.asia.utils.ULog;
 import teach.vietnam.asia.utils.Utility;
@@ -38,7 +40,9 @@ public class SearchAdapter extends BaseAdapter implements SectionIndexer {
         try {
             listData2.addAll(listData);
             layoutInflater = LayoutInflater.from(context);
-            lang = context.getString(R.string.language);
+//            lang = context.getString(R.string.language);
+            lang = BaseActivity.pref.getStringValue("en", Constant.EN);
+
             alpha = null;
             alpha = new String[listData.size()];
 
@@ -131,8 +135,8 @@ public class SearchAdapter extends BaseAdapter implements SectionIndexer {
                 listData.addAll(listData2);
             } else {
                 for (Object vi : listData2) {
-                    word1 = Utility.getO1(vi, lang);
-                    word2 = Utility.getO2(vi, lang);
+                    word1 = android.text.Html.fromHtml(Utility.getO1(vi, lang)).toString().toLowerCase();
+                    word2 = android.text.Html.fromHtml(Utility.getO2(vi, lang)).toString().toLowerCase();
                     if (word1.contains(charText) || charText.contains(word1)) {
                         listData.add(vi);
                     } else if (!word2.equals("") && (word2.contains(charText) || charText.contains(word2))) {

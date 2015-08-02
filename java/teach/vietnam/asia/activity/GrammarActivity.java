@@ -26,7 +26,7 @@ public class GrammarActivity extends BaseActivity {
         lstGrammar = getViewChild(R.id.lstGrammar);
         initData();
 
-        Utility.setScreenNameGA("GrammarActivity - lang:" + Locale.getDefault().getLanguage());
+        Utility.setScreenNameGA("GrammarActivity");
 
     }
 

@@ -12,6 +12,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import teach.vietnam.asia.R;
+import teach.vietnam.asia.activity.BaseActivity;
 import teach.vietnam.asia.sound.AudioPlayer;
 import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.ULog;
@@ -33,7 +34,8 @@ public class RecognizeListAdapter extends BaseAdapter {
         this.currPage = currPage;
         try {
             layoutInflater = LayoutInflater.from(context);
-            lang = context.getString(R.string.language);
+//            lang = context.getString(R.string.language);
+            lang = BaseActivity.pref.getStringValue("en", Constant.EN);
             audio = new AudioPlayer(context);
 
         } catch (Exception e) {

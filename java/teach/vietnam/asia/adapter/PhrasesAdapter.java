@@ -37,7 +37,6 @@ public class PhrasesAdapter extends BaseAdapter implements SectionIndexer {
     private LayoutInflater layoutInflater;
     private String lang = "";
     private String[] alpha;
-//    IAudioPlayer iAudioPlayer;
 
     @SuppressLint("DefaultLocale")
     public PhrasesAdapter(PhrasesActivity activity, List listData, IAudioPlayer iAudioPlayer) {
@@ -50,27 +49,18 @@ public class PhrasesAdapter extends BaseAdapter implements SectionIndexer {
         this.listData = listData;
         listData2 = new ArrayList();
         listData2.addAll(listData);
-        lang = activity.getString(R.string.language);
+        lang = activity.lang;
         layoutInflater = LayoutInflater.from(activity);
 
         alpha = null;
         alpha = new String[listData.size()];
 
-//        for (tblVietEN viet : listData) {
-//            alpha[i++] = viet.getO1().toString().replaceAll("<u>", "").replaceAll("</u>", "").split(" ")[0];
-//        }
-
         for (Object viet : listData) {
-//            alpha[i++] = Utility.getO1(viet, lang).replaceAll("<u>", "").replaceAll("</u>", "").split(" ")[0];
             word = android.text.Html.fromHtml(Utility.getO1(viet, lang)).toString();
             alpha[i++] = word.split(" ")[0];
         }
 
     }
-
-    // public LearnAdapter(Context context) {
-    // mContext = context;
-    // }
 
     public int getCount() {
         return listData.size();
@@ -90,12 +80,7 @@ public class PhrasesAdapter extends BaseAdapter implements SectionIndexer {
         alpha = null;
         alpha = new String[listData.size()];
 
-//        for (tblVietEN viet : listData) {
-//            alpha[i++] = viet.getO1().toString().replaceAll("<u>", "").replaceAll("</u>", "").split(" ")[0];
-//        }
-
         for (Object viet : listData) {
-//            alpha[i++] = Utility.getO1(viet, lang).replaceAll("<u>", "").replaceAll("</u>", "").split(" ")[0];
             word = android.text.Html.fromHtml(Utility.getO1(viet, lang)).toString();
             alpha[i++] = word.split(" ")[0];
         }
@@ -122,9 +107,6 @@ public class PhrasesAdapter extends BaseAdapter implements SectionIndexer {
             holder = (ViewHolder) view.getTag();
         }
 
-//        phrases = String.format(listData.get(position).getVi(), "<u><font size=\"3\" color=\"blue\">"
-//                + listData.get(position).getDefault_word() + " </font></u>");
-
         word_default = Utility.getDefaultWord(listData.get(position), lang);
         phrases = String.format(Utility.getVi(listData.get(position), lang), "<u><font color=\"blue\">"
                 + word_default + " </font></u>");
@@ -132,8 +114,6 @@ public class PhrasesAdapter extends BaseAdapter implements SectionIndexer {
         holder.tvViet.setText(Html.fromHtml(phrases));
         holder.tvOther.setText(Html.fromHtml(Utility.getO1(listData.get(position), lang)));
 
-//        word_default = Utility.getDefaultWord(listData.get(position), lang);
-//        if (listData.get(position).getDefault_word() != null && !listData.get(position).getDefault_word().trim().equals("")) {
         if (word_default != null && !word_default.trim().equals("")) {
             holder.llWord.setTag(word_default);
             holder.llWord.setOnClickListener(new OnClickListener() {
@@ -188,18 +168,19 @@ public class PhrasesAdapter extends BaseAdapter implements SectionIndexer {
                 listData.addAll(listData2);
             } else {
                 for (Object vi : listData2) {
-                    wordVN = Utility.getVi(vi, lang);
+                    wordVN = android.text.Html.fromHtml(Utility.getVi(vi, lang)).toString().toLowerCase();
 
                     if (wordVN.contains(charText) || charText.contains(wordVN)) {
                         listData.add(vi);
                     } else {
-                        word1 = Utility.getO1(vi, lang);
-                        word2 = Utility.getO2(vi, lang);
-
+                        word1 = android.text.Html.fromHtml(Utility.getO1(vi, lang)).toString().toLowerCase();
                         if (word1.contains(charText) || charText.contains(word1)) {
                             listData.add(vi);
-                        } else if (!word2.equals("") && (word2.contains(charText) || charText.contains(word2))) {
-                            listData.add(vi);
+                        } else {
+                            word2 = android.text.Html.fromHtml(Utility.getO2(vi, lang)).toString().toLowerCase();
+                            if (!word2.equals("") && (word2.contains(charText) || charText.contains(word2))) {
+                                listData.add(vi);
+                            }
                         }
                     }
                 }

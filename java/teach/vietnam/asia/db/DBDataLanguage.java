@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
 import teach.vietnam.asia.R;
+import teach.vietnam.asia.activity.BaseActivity;
 import teach.vietnam.asia.activity.MainActivity;
 import teach.vietnam.asia.activity.MyApplication;
 import teach.vietnam.asia.entity.DaoMaster;
@@ -31,6 +32,7 @@ import teach.vietnam.asia.utils.Utility;
 /**
  * Created by admin on 2/16/15.
  */
+@Deprecated
 public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
     public DaoMaster daoMaster;
     ICreateTable iCreateTable;
@@ -48,9 +50,11 @@ public class DBDataLanguage extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        ULog.i(DBDataLanguage.this, "onPreExecute....");
+        ULog.i("DBDataLanguage", "onPreExecute....");
         try {
-            lang = activity.getString(R.string.language);
+//            lang = activity.getString(R.string.language);
+            lang = BaseActivity.pref.getStringValue("en", Constant.EN);
+
             pref = new Prefs(activity.getApplicationContext());
 
 //            dao = Utility.getDao(activity, lang);

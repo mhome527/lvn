@@ -17,7 +17,9 @@ import java.util.List;
 import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.query.QueryBuilder;
 import teach.vietnam.asia.R;
+import teach.vietnam.asia.activity.BaseActivity;
 import teach.vietnam.asia.entity.PracticeDetailEntity;
+import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.ULog;
 import teach.vietnam.asia.utils.Utility;
 
@@ -34,7 +36,9 @@ public class RecognizePagerAdapter extends PagerAdapter {
         lstExceriese = new ArrayList<PracticeDetailEntity>();
         this.num = num;
         this.activity = activity;
-        lang  = activity.getString(R.string.language);
+//        lang  = activity.getString(R.string.language);
+        lang = BaseActivity.pref.getStringValue("en", Constant.EN);
+
     }
 
     @Override
@@ -87,7 +91,6 @@ public class RecognizePagerAdapter extends PagerAdapter {
             try {
                 dao = Utility.getRecDao(activity, lang);
                 qb = dao.queryBuilder();
-//                lang = activity.getString(R.string.language);
 
                 qb.where(Utility.getREC_GroupID(lang).eq(pos + 1));
 

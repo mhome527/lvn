@@ -5,8 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import java.util.Locale;
-
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.Utility;
@@ -22,7 +20,7 @@ public class PracticeActivity extends BaseActivity implements OnClickListener {
 	protected void initView(Bundle savedInstanceState) {
 		setInitData();
 
-        Utility.setScreenNameGA("PracticeActivity - lang:" + Locale.getDefault().getLanguage());
+        Utility.setScreenNameGA("PracticeActivity");
 
     }
 

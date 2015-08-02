@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Random;
 
 import teach.vietnam.asia.R;
+import teach.vietnam.asia.activity.BaseActivity;
+import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.ULog;
 import teach.vietnam.asia.utils.Utility;
 
@@ -37,7 +39,9 @@ public class RecognizeTestListAdapter extends BaseAdapter {
     public RecognizeTestListAdapter(Context context, List listData, RecognizeTest recognizeTest) {
 //        this.context = context;
 //        this.listData = listData;
-        lang = context.getString(R.string.language);
+//        lang = context.getString(R.string.language);
+        lang = BaseActivity.pref.getStringValue("en", Constant.EN);
+
         this.listData = cloneData(listData);
         this.recognizeTest =  recognizeTest;
 

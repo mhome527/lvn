@@ -32,7 +32,8 @@ public class DBSQLiteOpenHelper extends SQLiteOpenHelper {
             + " text not null);";
 
     public DBSQLiteOpenHelper(Context context) {
-        super(context, Constant.DB_NAME, null, DaoMaster.SCHEMA_VERSION);
+        super(context, Constant.DB_NAME_V2, null, DaoMaster.SCHEMA_VERSION);
+//        super(context, Constant.DB_NAME, null, DaoMaster.SCHEMA_VERSION);
     }
 
     @Override

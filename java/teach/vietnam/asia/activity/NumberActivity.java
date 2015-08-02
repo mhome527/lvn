@@ -15,10 +15,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.adapter.NumberAdapter;
+import teach.vietnam.asia.db.DBDataRecognize;
 import teach.vietnam.asia.sound.AudioPlayer;
 import teach.vietnam.asia.utils.NumberToWord;
 import teach.vietnam.asia.utils.ULog;
@@ -47,8 +47,11 @@ public class NumberActivity extends BaseActivity implements OnClickListener {
 
         initData();
         // new LoadData().execute();
-        Utility.setScreenNameGA("NumberActivity - lang:" + Locale.getDefault().getLanguage());
-
+        Utility.setScreenNameGA("NumberActivity");
+//        if(BuildConfig.DEBUG){
+//            InsertDB();
+//            Common.exportDB(Constant.DB_NAME_V2, this);
+//        }
     }
 
     @Override
@@ -184,6 +187,11 @@ public class NumberActivity extends BaseActivity implements OnClickListener {
         audio.speakWord(tvNumber.getText().toString().trim());
     }
 
+    //insert db
+    private void InsertDB(){
+        DBDataRecognize rec = new DBDataRecognize(this);
+        rec.insertTable();
+    }
 //	private void speakNumber(String strNumber) {
 //		int count = 0;
 //		String soundName;

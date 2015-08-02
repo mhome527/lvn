@@ -20,7 +20,8 @@ public class Constant {
     // final static public String APP_SECRET = "8i4fgakaa12k8q6";
     // final static public String APP_TOCKEN = "ukTwK3tqg4YAAAAAAAAQTK0gVjiMjB5P_vrpMab3zHhmqNGEu_OVPdkYBKXvsavp";
 
-    public static final String DB_NAME = "VN.db";
+//    public static final String DB_NAME = "VN.db";
+    public static final String DB_NAME_V2 = "VN_V2.db";
 
     //    public static final String JSON_WORDS_NAME;
     public static final String JSON_RECOGNIZE_NAME;
@@ -89,9 +90,9 @@ public class Constant {
             isPro = false;
     }
 
-    public static final String KEY_UPDATE = "db_update_1";
+    public static final String KEY_UPDATE = "db_update_2"; // gia tri khac se delete database cu
     public static final String KEY_SOUND = "key_sound";
-    public static final String VALUE_SOUND = "sound_6"; //gia tri tang khi file Mapname.txt thay doi.
+    public static final String VALUE_SOUND = "sound_7"; //gia tri tang khi file Mapname.txt thay doi.
     //
 //	// /////////
 //	public static final String COLUMN_SOUND = tblMapNameDao.Properties.Sound.columnName;

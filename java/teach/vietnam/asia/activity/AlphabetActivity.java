@@ -11,7 +11,6 @@ import android.widget.GridView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.adapter.AlphabetAdapter;
@@ -43,7 +42,7 @@ public class AlphabetActivity extends BaseActivity implements OnClickListener {
         initData();
         new LoadData().execute();
 
-        Utility.setScreenNameGA("AlphabetActivity - lang:" + Locale.getDefault().getLanguage());
+        Utility.setScreenNameGA("AlphabetActivity");
     }
 
     @Override

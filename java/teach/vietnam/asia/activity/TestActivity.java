@@ -1,6 +1,8 @@
 package teach.vietnam.asia.activity;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.os.Bundle;
 
 import java.io.File;
@@ -14,8 +16,8 @@ import teach.vietnam.asia.BuildConfig;
 import teach.vietnam.asia.entity.DaoMaster;
 import teach.vietnam.asia.entity.tblMapName;
 import teach.vietnam.asia.entity.tblMapNameDao;
-import teach.vietnam.asia.entity.tblVietRU;
-import teach.vietnam.asia.entity.tblVietRUDao;
+import teach.vietnam.asia.entity.tblVietFR;
+import teach.vietnam.asia.entity.tblVietFRDao;
 import teach.vietnam.asia.utils.EncryptData;
 import teach.vietnam.asia.utils.ULog;
 
@@ -33,37 +35,68 @@ public class TestActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 //		testFunction();
-        testWord();
+//        testWord();
+//		translate();
+	}
+
+	private void translate(){
+		Intent i = new Intent();
+		i.setAction(Intent.ACTION_VIEW);
+		i.putExtra("key_text_input", "Me gusta la cerveza");
+		i.putExtra("key_text_output", "");
+		i.putExtra("key_language_from", "es");
+		i.putExtra("key_language_to", "en");
+		i.putExtra("key_suggest_translation", "");
+		i.putExtra("key_from_floating_window", false);
+		i.setComponent(
+				new ComponentName(
+						"com.google.android.apps.translate",
+						"com.google.android.apps.translate.translation.TranslateActivity"));
+		startActivity(i);
 	}
 
     private void testWord(){
         DaoMaster daoMaster;
         tblMapNameDao dao;
-        tblVietRUDao daoRu;
-        List<tblVietRU> lstRu;
+//        tblVietRUDao daoRu;
+        tblVietFRDao daoRu;
+//        List<tblVietRU> lstRu;
+        List<tblVietFR> lstRu;
 
 
         QueryBuilder<tblMapName> qb;
-        QueryBuilder<tblVietRU> qbRu;
+//        QueryBuilder<tblVietRU> qbRu;
+        QueryBuilder<tblVietFR> qbRu;
         try {
             daoMaster = ((MyApplication) this.getApplicationContext()).daoMaster;
 
             dao = daoMaster.newSession().getTblMapNameDao();
 //            qb = dao.queryBuilder();
 
-            daoRu = daoMaster.newSession().getTblVietRUDao();
+//            daoRu = daoMaster.newSession().getTblVietRUDao();
+//            qbRu = daoRu.queryBuilder();
+//
+// 		daoRu = daoMaster.newSession().getTblVietRUDao();
+ 		daoRu = daoMaster.newSession().getTblVietFRDao();
             qbRu = daoRu.queryBuilder();
 
             if (qbRu != null && qbRu.list().size() > 0) {
-                for(tblVietRU ru : qbRu.list()){
+//                for(tblVietRU ru : qbRu.list()){
+                for(tblVietFR ru : qbRu.list()){
                     String []strVi;
 //                    ULog.i(this, "phrase: " + ru.getVi());
-                    strVi = ru.getVi().replaceAll("!", "").replaceAll("\\?", "").replaceAll("[.]", "").replaceAll(",", "").replaceAll("<u>", "").replaceAll("</u>", "").toLowerCase().toString().split(" ");
-                    for(String word : strVi){
+                    String strTmp = ru.getVi().replaceAll("!", "").replaceAll("\\?", "").replaceAll("[.]", " ").replaceAll(",", "").replaceAll("<u>", "").replaceAll("</u>", "").toLowerCase().toString();
+					strTmp = strTmp.trim();
+					strVi = strTmp.split(" ");
+//					ULog.i(this, "phrase word = " + strTmp);
+
+					for(String word : strVi){
                         qb = dao.queryBuilder();
-                        qb.where(tblMapNameDao.Properties.Filename.eq(word));
-                        if(qb.list().size()==0){
-                            ULog.i(this, "***************************** word = " + word);
+						String word2 = word.trim();
+
+                        qb.where(tblMapNameDao.Properties.Filename.in(word2));
+                        if(qb.list().size()==0 && !word.equals(" ")){
+                            ULog.i(this, "***************************** word = " + word2 +"=");
                         }
                     }
 
@@ -139,4 +172,6 @@ public class TestActivity extends Activity {
 		}
 
 	}
+
+
 }

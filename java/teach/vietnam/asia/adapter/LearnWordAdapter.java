@@ -39,7 +39,7 @@ public class LearnWordAdapter extends BaseAdapter {
 		activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 		widthScreen = (metrics.widthPixels - 50) / 3;
 		heightScreen = (int) (widthScreen * 1.3);
-		ULog.i(LearnWordAdapter.class, "getView width: " + widthScreen + "; height:" + heightScreen);
+//		ULog.i(LearnWordAdapter.class, "getView width: " + widthScreen + "; height:" + heightScreen);
 
 	}
 
@@ -80,14 +80,15 @@ public class LearnWordAdapter extends BaseAdapter {
 
 
             viewHolder.tvName.setText(Utility.getVi(lstData.get(index), lang));
-            resourceId = Utility.getResourcesID(activity, Utility.getImg(lstData.get(index), lang));
+			String strImage = Utility.getImg(lstData.get(index), lang);
+            resourceId = Utility.getResourcesID(activity, strImage);
 
 //            viewHolder.tvName.setText(arrViet.get(index).getVi());
 //			resourceId = Utility.getResourcesID(activity, arrViet.get(index).getImg());
 			if (resourceId > 0) {
 				viewHolder.imgWord.setImageResource(resourceId);
 			} else
-				ULog.i(LearnWordAdapter.class, "getView image not found ");
+				ULog.i(LearnWordAdapter.class, "getView image not found!!!!!! " + strImage);
 
 		} catch (Exception e) {
 			ULog.e(this, "number error:" + e.getMessage());

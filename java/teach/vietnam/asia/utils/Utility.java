@@ -529,13 +529,44 @@ public class Utility {
             if (!BuildConfig.DEBUG) {
                 MyApplication mInstance = MyApplication.getInstance();
                 Tracker tracker = mInstance.getTrackerApp();
-                tracker.set(Fields.SCREEN_NAME, name);
+                tracker.set(Fields.SCREEN_NAME, name + " - lang:" + Locale.getDefault().getLanguage());
                 tracker.send(MapBuilder.createAppView().build());
             }
         } catch (Exception e) {
             ULog.e("Utility", "setScreenNameGA Error:" + e.getMessage());
         }
     }
+
+//    public static void copyDataBase(Context context) {
+//        ULog.i("Database",
+//                "New database is being copied to device!");
+////        getApplicationContext()
+//        ContextWrapper cw =new ContextWrapper(context);
+//        String DB_PATH =cw.getFilesDir().getAbsolutePath()+ "/databases/"; //edited to databases
+//        byte[] buffer = new byte[1024];
+//        OutputStream myOutput = null;
+//        int length;
+//        // Open your local db as the input stream
+//        InputStream myInput = null;
+//        try {
+//            myInput = context.getAssets().open(Constant.DB_NAME);
+//            // transfer bytes from the inputfile to the
+//            // outputfile
+//            myOutput = new FileOutputStream(DB_PATH + Constant.DB_NAME);
+//            while ((length = myInput.read(buffer)) > 0) {
+//                myOutput.write(buffer, 0, length);
+//            }
+//            myOutput.close();
+//            myOutput.flush();
+//            myInput.close();
+//            ULog.i("Database", "New database has been copied to device!");
+//
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+    //////
 
     public static AbstractDao getDao(Context context, String lang) {
         AbstractDao dao;
@@ -865,6 +896,7 @@ public class Utility {
 
     /**
      * delete table Rec
+     *
      * @param lang
      * @param db
      */
@@ -887,6 +919,7 @@ public class Utility {
 
     /**
      * create table Rec
+     *
      * @param lang
      * @param db
      */

@@ -3,6 +3,7 @@ package teach.vietnam.asia.activity;
 import android.app.ProgressDialog;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.TextView;
 
 import teach.vietnam.asia.R;
@@ -13,6 +14,7 @@ import teach.vietnam.asia.utils.ULog;
 
 public class SplashActivity extends BaseActivity implements DBDataSound.ICreateTable {
 
+    private final String TAG = "SplashActivity";
     public DaoMaster daoMaster;
     public ProgressDialog progressDialog;
 
@@ -27,10 +29,36 @@ public class SplashActivity extends BaseActivity implements DBDataSound.ICreateT
             ULog.i(this, "======== Product value:" + Constant.isPro);
             TextView tvTitle = getViewChild(R.id.tvTitle);
 
-            new DBDataSound(this, this).execute();
+//            new DBDataSound(this, this).execute();
+
+
 
             Typeface tf = Typeface.createFromAsset(getAssets(), "aachenb.ttf");
             tvTitle.setTypeface(tf, Typeface.BOLD);
+
+
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+//                    Prefs pref = new Prefs(SplashActivity.this.getApplicationContext());
+//                    String strDB = pref.getStringValue("", Constant.KEY_UPDATE);
+//                    if(strDB.equals("") || !strDB.equals(Constant.KEY_UPDATE) ) {
+//                        ULog.i(TAG, "Delete database....");
+//                        SplashActivity.this.deleteDatabase(Constant.DB_NAME_V2);
+//                    }
+//
+//                    SqlLiteCopyDbHelper dbHelper = new SqlLiteCopyDbHelper(SplashActivity.this);
+//		            if(dbHelper.openDataBase()) {
+//                        pref.putStringValue(Constant.KEY_UPDATE, Constant.KEY_UPDATE);
+                        SplashActivity.this.startActivity2(MainActivity.class);
+//                    }
+//                    else
+//                        ULog.e(TAG, "Import Error!!!!!");
+
+
+                    SplashActivity.this.finish();
+                }
+            }, 1500);
+
         } catch (Exception e) {
             ULog.e(SplashActivity.class, "initView Error: " + e.getMessage());
             e.printStackTrace();

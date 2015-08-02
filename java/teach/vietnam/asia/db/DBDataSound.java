@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 
 import teach.vietnam.asia.BuildConfig;
 import teach.vietnam.asia.R;
+import teach.vietnam.asia.activity.BaseActivity;
 import teach.vietnam.asia.activity.MyApplication;
 import teach.vietnam.asia.activity.SplashActivity;
 import teach.vietnam.asia.entity.DaoMaster;
@@ -38,7 +39,9 @@ public class DBDataSound extends AsyncTask<Void, Void, Boolean> {
         super.onPreExecute();
         ULog.i(DBDataSound.this, "onPreExecute....");
         try {
-            lang = activity.getString(R.string.language);
+//            lang = activity.getString(R.string.language);
+            lang = BaseActivity.pref.getStringValue("en", Constant.EN);
+
             pref = new Prefs(activity.getApplicationContext());
 
 //            dao = Utility.getDao(activity, lang);
@@ -64,6 +67,7 @@ public class DBDataSound extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected Boolean doInBackground(Void... voids) {
         try {
+
             if (initData.equals("") || !initData.equals(Constant.VALUE_SOUND)) {
                 ULog.i(DBDataSound.class, "doInBackground Loading....");
                 daoMaster = ((MyApplication) activity.getApplicationContext()).daoMaster;

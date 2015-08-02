@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher.ViewFactory;
 
 import java.util.List;
-import java.util.Locale;
 
 import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.query.QueryBuilder;
@@ -40,7 +39,7 @@ public class LearnFoodActivity extends BaseActivity implements ViewFactory, OnCl
     private AudioPlayer audio;
     private TextView tvFood;
     private List lstData;
-    private String lang = "";
+//    private String lang = "";
 
     @Override
     protected int getViewLayoutId() {
@@ -49,6 +48,8 @@ public class LearnFoodActivity extends BaseActivity implements ViewFactory, OnCl
 
     @Override
     protected void initView(Bundle savedInstanceState) {
+        ULog.i(this, "======class: initView");
+
         // viewPager = getViewChild(R.id.pagerFruit);
         gallery = getViewChild(R.id.gallery1);
         tvFood = getViewChild(R.id.tvFood);
@@ -57,7 +58,7 @@ public class LearnFoodActivity extends BaseActivity implements ViewFactory, OnCl
 
         setInitData();
 
-        Utility.setScreenNameGA("LearnFoodActivity - lang:" + Locale.getDefault().getLanguage());
+        Utility.setScreenNameGA("LearnFoodActivity");
 
     }
 
@@ -110,12 +111,13 @@ public class LearnFoodActivity extends BaseActivity implements ViewFactory, OnCl
         ImageView iView = new ImageView(this);
         iView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         iView.setLayoutParams(new ImageSwitcher.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        iView.setBackgroundColor(0xFFffffff);
+//        iView.setBackgroundColor(0xFFffffff);
 
         return iView;
     }
 
     private void setInitData() {
+        ULog.i(this, "setInitData");
         audio = new AudioPlayer(LearnFoodActivity.this);
         // imgVolume.setOnClickListener(this);
         // adapter = new FruitPagerAdapter(this, mImageIds);
@@ -182,17 +184,12 @@ public class LearnFoodActivity extends BaseActivity implements ViewFactory, OnCl
             AbstractDao dao;
 
             try {
-//				daoMaster = ((MyApplication) getApplication()).daoMaster;
-//				dao = daoMaster.newSession().getTblVietDao();
-//				qb = dao.queryBuilder();
-//
-//				qb.where(tblVietDao.Properties.Kind.eq(3));
 
                 dao = Utility.getDao(LearnFoodActivity.this, lang);
                 qb = dao.queryBuilder();
                 qb.where(Utility.getKind(lang).eq(3));
                 // qb.orderDesc(tblVietDao.Properties.Show);
-                ULog.i(this, "===data db:" + qb.list().size());
+                ULog.i(LearnFoodActivity.class, "===data db:" + qb.list().size());
                 lstData = qb.list();
             } catch (Exception e) {
                 ULog.e(LearnFoodActivity.class, "load data error:" + e.getMessage());
@@ -214,7 +211,7 @@ public class LearnFoodActivity extends BaseActivity implements ViewFactory, OnCl
                 return;
             }
             if (lstData != null && lstData.size() > 0) {
-                resourceId = Utility.getResourcesID(LearnFoodActivity.this, Utility.getImg(lstData.get(0), lang));
+                resourceId = Utility.getResourcesID(LearnFoodActivity.this, "f_" + Utility.getImg(lstData.get(0), lang) +"_l");
                 if (resourceId > 0) {
                     selectedImage.setImageResource(resourceId);
                 } else

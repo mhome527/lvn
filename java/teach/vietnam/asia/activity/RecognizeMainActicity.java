@@ -14,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.adapter.MenuRecognizeAdapter;
@@ -28,6 +27,8 @@ import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.ULog;
 import teach.vietnam.asia.utils.Utility;
 import teach.vietnam.asia.view.MainMenuLayout;
+
+//import teach.vietnam.asia.db.DBDataRecognize;
 
 public class RecognizeMainActicity extends BaseActivity implements BaseFragment.OnFragmentInteractionListener, FragmentManager.OnBackStackChangedListener, DBDataRecognize.IFinishSave {
 
@@ -60,8 +61,7 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
 
         /////
         setInitData();
-
-        Utility.setScreenNameGA("RecognizeMainActicity - lang:" + Locale.getDefault().getLanguage());
+        Utility.setScreenNameGA("RecognizeMainActicity");
 
     }
 
@@ -77,7 +77,8 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
     @Override
     protected void onResume() {
         super.onResume();
-        new DBDataRecognize(this, this).execute();
+//        new LoadData().execute();
+//        new DBDataRecognize(this, this).execute();
     }
 
     @Override
@@ -89,7 +90,7 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
 
     @Override
     protected void reloadData() {
-        new LoadData().execute();
+//        new LoadData().execute();
     }
 
 //    @Override
@@ -171,6 +172,7 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
     private void setInitData() {
         String initData = pref.getStringValue("", Constant.JSON_RECOGNIZE_NAME);
         ULog.i(RecognizeMainActicity.class, "setInit: " + initData);
+        new LoadData().execute();
 
         lstRecognize.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -195,12 +197,12 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
 
     @Override
     public void isFinish(boolean b) {
-        if (b) {
-            new LoadData().execute();
-        } else {
-            if (progressDialog != null && progressDialog.isShowing())
-                progressDialog.dismiss();
-        }
+//        if (b) {
+//            new LoadData().execute();
+//        } else {
+//            if (progressDialog != null && progressDialog.isShowing())
+//                progressDialog.dismiss();
+//        }
     }
 
     //get amount pager
@@ -243,6 +245,7 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
 //                }
 
                 if (isFinishing()) {
+                    ULog.i(RecognizeMainActicity.this, "finish");
                     return;
                 }
                 if (num > 0) {
@@ -259,6 +262,8 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
                     }
 
                     amount = num;
+                }else{
+                    ULog.i(RecognizeMainActicity.this, "Load data error!!!, num= 0");
                 }
             } catch (Exception e) {
                 ULog.e(RecognizeMainActicity.class, "onPostExecute Error: " + e.getMessage());
@@ -270,13 +275,14 @@ public class RecognizeMainActicity extends BaseActivity implements BaseFragment.
             int count = 1;
             // lstNumberEx = new ArrayList<TblNumberEx>();
             cond = "SELECT GROUP_CONCAT(VN) FROM  " + Utility.getRecTableName(lang) + " GROUP BY " + Utility.getREC_GroupID(lang).name;
-            ULog.i(RecognizeMainActicity.class, "SQL: " + cond);
+//            ULog.i(RecognizeMainActicity.class, "SQL: " + cond);
             lstData = new ArrayList<String>();
             try {
                 Cursor c = session.getDatabase().rawQuery(cond, null);
                 while (c.moveToNext()) {
                     lstData.add(count++ + ". " + c.getString(0).replace(",", " - "));
                 }
+                ULog.i(RecognizeMainActicity.class, "data size:" + lstData.size());
 
                 c.close();
             } catch (Exception e) {

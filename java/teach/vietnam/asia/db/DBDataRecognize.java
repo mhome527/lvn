@@ -1,10 +1,10 @@
 package teach.vietnam.asia.db;
 
-import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
 import teach.vietnam.asia.BuildConfig;
 import teach.vietnam.asia.R;
+import teach.vietnam.asia.activity.BaseActivity;
 import teach.vietnam.asia.activity.MyApplication;
 import teach.vietnam.asia.activity.RecognizeMainActicity;
 import teach.vietnam.asia.entity.DaoMaster;
@@ -31,39 +31,47 @@ import teach.vietnam.asia.utils.Utility;
 /**
  * Created by admin on 3/3/15.
  */
+@Deprecated
 public class DBDataRecognize extends AsyncTask<Void, Void, Boolean> {
 
     public DaoMaster daoMaster;
     private String initData = "";
-    private RecognizeMainActicity activity;
-//    private ProgressDialog progressDialog;
+//    private RecognizeMainActicity activity;
+    private BaseActivity activity;
+    //    private ProgressDialog progressDialog;
     private Prefs pref;
     private String lang;
 
     private IFinishSave iFinishSave;
 
-    public DBDataRecognize(RecognizeMainActicity activity, IFinishSave iFinishSave) {
+    public DBDataRecognize(BaseActivity activity) {
         this.activity = activity;
-        this.iFinishSave = iFinishSave;
+        lang = activity.lang;
+        daoMaster = ((MyApplication) activity.getApplicationContext()).daoMaster;
     }
+
+//    public DBDataRecognize(RecognizeMainActicity activity, IFinishSave iFinishSave) {
+//        this.activity = activity;
+//        this.iFinishSave = iFinishSave;
+//    }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
         ULog.i(DBDataRecognize.this, "onPreExecute loading........................");
-        lang = activity.lang;
-        pref = new Prefs(activity.getApplicationContext());
-
-        initData = pref.getStringValue("", lang + "rc");
-        if (initData.equals("") || !initData.equals(activity.getString(R.string.db_value_rc))) {
-            activity.progressDialog = new ProgressDialog(activity);
-            activity.progressDialog.setMessage(activity.getString(R.string.msg_now_loading));
-            activity.progressDialog.setProgressStyle(activity.progressDialog.STYLE_HORIZONTAL);
-            activity.progressDialog.setCancelable(false);
-            activity.progressDialog.setCanceledOnTouchOutside(false);
-            activity.progressDialog.show();
-        } else
-            ULog.i(DBDataLanguage.class, "Don't create db, lang:" + lang);
+//        lang = activity.lang;
+//        pref = new Prefs(activity.getApplicationContext());
+//
+//        initData = pref.getStringValue("", lang + "rc");
+//        if (initData.equals("") || !initData.equals(activity.getString(R.string.db_value_rc))) {
+//            activity.progressDialog = new ProgressDialog(activity);
+//            activity.progressDialog.setMessage(activity.getString(R.string.msg_now_loading));
+//            activity.progressDialog.setProgressStyle(activity.progressDialog.STYLE_HORIZONTAL);
+//            activity.progressDialog.setCancelable(false);
+//            activity.progressDialog.setCanceledOnTouchOutside(false);
+//            activity.progressDialog.show();
+//        } else
+//            ULog.i(DBDataLanguage.class, "Don't create db, lang:" + lang);
     }
 
     @Override
@@ -72,16 +80,16 @@ public class DBDataRecognize extends AsyncTask<Void, Void, Boolean> {
         try {
             ULog.i(DBDataRecognize.this, "Loading....");
             daoMaster = ((MyApplication) activity.getApplicationContext()).daoMaster;
-            initData = activity.pref.getStringValue("", lang + "rc");
-            if (initData.equals("") || !initData.equals(activity.getString(R.string.db_value_rc))) {
-                Utility.deleteTableRec(lang, daoMaster.getDatabase());
-                Utility.CreateTableRec(lang, daoMaster.getDatabase());
-
+//            initData = activity.pref.getStringValue("", lang + "rc");
+//            if (initData.equals("") || !initData.equals(activity.getString(R.string.db_value_rc))) {
+//                Utility.deleteTableRec(lang, daoMaster.getDatabase());
+//                Utility.CreateTableRec(lang, daoMaster.getDatabase());
+//
                 insertTable();
-            } else {
-                ULog.i(RecognizeMainActicity.class, "Don't insert map");
-                return false;
-            }
+//            } else {
+//                ULog.i(RecognizeMainActicity.class, "Don't insert map");
+//                return false;
+//            }
 
         } catch (Exception e) {
             ULog.e(RecognizeMainActicity.class, "load data fail");
@@ -96,27 +104,42 @@ public class DBDataRecognize extends AsyncTask<Void, Void, Boolean> {
         if (result)
             pref.putStringValue(activity.getString(R.string.db_value_rc), lang + "rc");
 
-        if (!activity.isFinishing() && activity.progressDialog != null && activity.progressDialog.isShowing())
-            activity.progressDialog.dismiss();
-        iFinishSave.isFinish(result);
+//        if (!activity.isFinishing() && activity.progressDialog != null && activity.progressDialog.isShowing())
+//            activity.progressDialog.dismiss();
+//        if (iFinishSave != null)
+//            iFinishSave.isFinish(result);
 //        new LoadData().execute();
     }
 
-    private void insertTable() {
-        if (lang.equals("ja"))
-            insertDataJA();
-        else if (lang.equals("ko"))
-            insertDataKo();
-        else if (lang.equals("ru"))
-            insertDataRU();
-        else if (lang.equals("fr"))
-            insertDataFR();
-        else if (lang.equals("it"))
-            insertDataIT();
-        else if (lang.equals("es"))
-            insertDataEs();
-        else
-            insertDataEN();
+    public void insertTable() {
+        lang = "ja";
+        insertDataJA();
+        lang = "ko";
+        insertDataKo();
+        lang = "ru";
+        insertDataRU();
+        lang = "fr";
+        insertDataFR();
+        lang = "it";
+        insertDataIT();
+        lang = "es";
+        insertDataEs();
+
+
+//        if (lang.equals("ja"))
+//            insertDataJA();
+//        else if (lang.equals("ko"))
+//            insertDataKo();
+//        else if (lang.equals("ru"))
+//            insertDataRU();
+//        else if (lang.equals("fr"))
+//            insertDataFR();
+//        else if (lang.equals("it"))
+//            insertDataIT();
+//        else if (lang.equals("es"))
+//            insertDataEs();
+//        else
+//            insertDataEN();
     }
 
     private void insertDataEN() {
@@ -132,13 +155,13 @@ public class DBDataRecognize extends AsyncTask<Void, Void, Boolean> {
             }
 
             ULog.i(this, "=====insertDataEN words size data :" + word.listData.size());
-            activity.progressDialog.setMax(word.listData.size());
+//            activity.progressDialog.setMax(word.listData.size());
 
             int count = 0;
             for (tblRecEN entity : word.listData) {
                 mDaoSession.insertOrReplace(entity);
-                count++;
-                activity.progressDialog.setProgress(count);
+//                count++;
+//                activity.progressDialog.setProgress(count);
             }
             ULog.i(this, "insertDataEN ===== words load finish");
 //            activity.progressDialog.dismiss();
@@ -161,13 +184,13 @@ public class DBDataRecognize extends AsyncTask<Void, Void, Boolean> {
                 ULog.e(DBDataLanguage.class, "Can't load Json");
                 return;
             }
-            activity.progressDialog.setMax(word.listData.size());
+//            activity.progressDialog.setMax(word.listData.size());
             ULog.i(this, "=====insertDataJA words size data :" + word.listData.size());
-            int count = 0;
+//            int count = 0;
             for (tblRecJA entity : word.listData) {
                 mDaoSession.insertOrReplace(entity);
-                count++;
-                activity.progressDialog.setProgress(count);
+//                count++;
+//                activity.progressDialog.setProgress(count);
             }
             ULog.i(this, "insertDataJA ===== words load finish");
 //            activity.progressDialog.dismiss();
@@ -192,13 +215,13 @@ public class DBDataRecognize extends AsyncTask<Void, Void, Boolean> {
                 return;
             }
 
-            activity.progressDialog.setMax(word.listData.size());
+//            activity.progressDialog.setMax(word.listData.size());
             ULog.i(this, "===== words size data :" + word.listData.size());
-            int count = 0;
+//            int count = 0;
             for (tblRecKO entity : word.listData) {
                 mDaoSession.insertOrReplace(entity);
-                count++;
-                activity.progressDialog.setProgress(count);
+//                count++;
+//                activity.progressDialog.setProgress(count);
             }
             ULog.i(this, "insertDataKo ===== words load finish");
 //            activity.progressDialog.dismiss();
@@ -223,13 +246,13 @@ public class DBDataRecognize extends AsyncTask<Void, Void, Boolean> {
                 return;
             }
 
-            activity.progressDialog.setMax(word.listData.size());
+//            activity.progressDialog.setMax(word.listData.size());
             ULog.i(this, "===== words size data :" + word.listData.size());
-            int count = 0;
+//            int count = 0;
             for (tblRecES entity : word.listData) {
                 mDaoSession.insertOrReplace(entity);
-                count++;
-                activity.progressDialog.setProgress(count);
+//                count++;
+//                activity.progressDialog.setProgress(count);
             }
             ULog.i(this, "insertDataEs ===== words load finish");
 //            activity.progressDialog.dismiss();
@@ -254,13 +277,13 @@ public class DBDataRecognize extends AsyncTask<Void, Void, Boolean> {
                 return;
             }
 
-            activity.progressDialog.setMax(word.listData.size());
+//            activity.progressDialog.setMax(word.listData.size());
             ULog.i(this, "===== words size data :" + word.listData.size());
-            int count = 0;
+//            int count = 0;
             for (tblRecFR entity : word.listData) {
                 mDaoSession.insertOrReplace(entity);
-                count++;
-                activity.progressDialog.setProgress(count);
+//                count++;
+//                activity.progressDialog.setProgress(count);
             }
             ULog.i(this, "insertDataFR ===== words load finish");
 //            activity.progressDialog.dismiss();
@@ -285,13 +308,13 @@ public class DBDataRecognize extends AsyncTask<Void, Void, Boolean> {
                 return;
             }
 
-            activity.progressDialog.setMax(word.listData.size());
+//            activity.progressDialog.setMax(word.listData.size());
             ULog.i(this, "===== words size data :" + word.listData.size());
-            int count = 0;
+//            int count = 0;
             for (tblRecIT entity : word.listData) {
                 mDaoSession.insertOrReplace(entity);
-                count++;
-                activity.progressDialog.setProgress(count);
+//                count++;
+//                activity.progressDialog.setProgress(count);
             }
             ULog.i(this, "insertDataIT ===== words load finish");
 //            activity.progressDialog.dismiss();
@@ -315,13 +338,13 @@ public class DBDataRecognize extends AsyncTask<Void, Void, Boolean> {
                 return;
             }
 
-            activity.progressDialog.setMax(word.listData.size());
+//            activity.progressDialog.setMax(word.listData.size());
             ULog.i(this, "===== words size data :" + word.listData.size());
-            int count = 0;
+//            int count = 0;
             for (tblRecRU entity : word.listData) {
                 mDaoSession.insertOrReplace(entity);
-                count++;
-                activity.progressDialog.setProgress(count);
+//                count++;
+//                activity.progressDialog.setProgress(count);
             }
             ULog.i(this, "===== insertDataRU words load finish");
 //            activity.progressDialog.dismiss();

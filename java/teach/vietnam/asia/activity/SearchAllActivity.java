@@ -17,7 +17,6 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.query.QueryBuilder;
@@ -50,7 +49,7 @@ public class SearchAllActivity extends BaseActivity implements OnClickListener {
 
         setInitData();
 
-        Utility.setScreenNameGA("SearchAllActivity - lang:" + Locale.getDefault().getLanguage());
+        Utility.setScreenNameGA("SearchAllActivity");
 
     }
 
@@ -77,7 +76,6 @@ public class SearchAllActivity extends BaseActivity implements OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
-//        lang = SearchAllActivity.this.getString(R.string.language);
 //        new LoadData().execute();
     }
 
@@ -138,7 +136,7 @@ public class SearchAllActivity extends BaseActivity implements OnClickListener {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 String phrases;
                 if (Constant.isPro) {
-                    phrases = String.format(Utility.getVi(adapter.getItem(position), lang), Utility.getVi(adapter.getItem(position), lang));
+                    phrases = String.format(Utility.getVi(adapter.getItem(position), lang), Utility.getDefaultWord(adapter.getItem(position), lang));
                     speakPhrases(phrases);
                 } else {
                     ULog.i(LearnWordsActivity.class, "onItemClick NOT PREMIUM");
@@ -153,7 +151,8 @@ public class SearchAllActivity extends BaseActivity implements OnClickListener {
         String soundName;
 
         try {
-            soundName = phrases.replaceAll("!", "").replaceAll("\\?", "").replaceAll("[.]", "").replaceAll(",", "").replaceAll("<u>", "").replaceAll("</u>", "").toLowerCase();
+            soundName = phrases.replaceAll("!", "").replaceAll("\\?", "").replaceAll("[.]", "").replaceAll(",", "").toLowerCase();
+            soundName = android.text.Html.fromHtml(soundName).toString();
             audio.speakWord(soundName);
         } catch (Exception e) {
             ULog.e(SearchAllActivity.class, "speakPhrases Error: " + e.getMessage());

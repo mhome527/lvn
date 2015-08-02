@@ -11,6 +11,7 @@ import java.util.Random;
 import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.query.QueryBuilder;
 import teach.vietnam.asia.R;
+import teach.vietnam.asia.activity.BaseActivity;
 import teach.vietnam.asia.activity.LearnWordsActivity;
 import teach.vietnam.asia.activity.RecognizeMainActicity;
 import teach.vietnam.asia.adapter.RecognizePagerTestAdapter;
@@ -94,7 +95,8 @@ public class TestRecognizeFragment extends BaseFragment implements RecognizeTest
     @Override
     public void onResume() {
         super.onResume();
-        lang = getActivity().getString(R.string.language);
+        lang = BaseActivity.pref.getStringValue("en", Constant.EN);
+
         setInitData();
     }
 

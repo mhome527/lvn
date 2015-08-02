@@ -12,9 +12,6 @@ import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-
 import teach.vietnam.asia.R;
 import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.Prefs;
@@ -48,6 +45,14 @@ public abstract class BaseActivity extends Activity implements OnClickListener {
             ULog.i(tag, "======class: " + this.getClass().getSimpleName());
             if (pref == null)
                 pref = new Prefs(getApplicationContext());
+            lang = pref.getStringValue("", Constant.EN);
+
+            if(lang.equals(""))
+                lang = getString(R.string.language);
+
+            pref.putStringValue(lang, Constant.EN);
+
+
             // //////////
             // requestWindowFeature(Window.FEATURE_NO_TITLE);
             // if (getViewLayoutId() > 0) {
@@ -78,19 +83,15 @@ public abstract class BaseActivity extends Activity implements OnClickListener {
                 setListenerView(R.id.btnFlag, this);
             }
             // ///////ad
-            if (!Constant.isPro) {
-                AdView adView = getViewChild(R.id.adView);
-                if (adView != null) {
-                    adView.setVisibility(View.VISIBLE);
-                    AdRequest adRequest = new AdRequest.Builder().build();
-                    adView.loadAd(adRequest);
-                }
-            }
+//            if (!Constant.isPro) {
+//                AdView adView = getViewChild(R.id.adView);
+//                if (adView != null) {
+//                    adView.setVisibility(View.VISIBLE);
+//                    AdRequest adRequest = new AdRequest.Builder().build();
+//                    adView.loadAd(adRequest);
+//                }
+//            }
             // //
-            // changeThemeBG();
-            // setContentView(getViewLayoutId());
-            // initView();
-
 
             // setAction();
 
@@ -114,12 +115,12 @@ public abstract class BaseActivity extends Activity implements OnClickListener {
             changeThemeBG();
         }
 
-        String tmp;
-        tmp = this.getString(R.string.language);
-        if (lang.equals("") || !lang.equals(tmp)) {
-            lang = tmp;
+//        String tmp;
+//        tmp = this.getString(R.string.language);
+//        if (lang.equals("") || !lang.equals(tmp)) {
+//            lang = tmp;
             reloadData();
-        }
+//        }
         // GA
 //        Utility.setScreenNameGA(this.getClass().getSimpleName() + " - lang:" + lang);
 
@@ -185,6 +186,12 @@ public abstract class BaseActivity extends Activity implements OnClickListener {
         View v = getViewChild(id);
         v.setOnClickListener(lis);
     }
+
+    public void setListenerView(int id) {
+        View v = getViewChild(id);
+        v.setOnClickListener(this);
+    }
+
 
     public void startActivity2(Class<?> cls) {
         Intent i = new Intent(BaseActivity.this, cls);

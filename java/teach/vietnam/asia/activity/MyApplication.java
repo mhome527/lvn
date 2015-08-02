@@ -9,9 +9,11 @@ import com.google.analytics.tracking.android.Tracker;
 
 import teach.vietnam.asia.api.RequestManager;
 import teach.vietnam.asia.db.DbController;
+import teach.vietnam.asia.db.SqlLiteCopyDbHelper;
 import teach.vietnam.asia.entity.DaoMaster;
 import teach.vietnam.asia.utils.Constant;
 import teach.vietnam.asia.utils.Prefs;
+import teach.vietnam.asia.utils.ULog;
 
 public class MyApplication extends Application {
 	public static MyApplication mInstance;
@@ -25,6 +27,28 @@ public class MyApplication extends Application {
 		mInstance = this;
 		// startService();
 
+		//copy data
+//		AssetDatabaseOpenHelper dbHelper = new AssetDatabaseOpenHelper(this);
+//		dbHelper.openDatabase();
+
+//		SqlLiteCopyDbHelper dbHelper = new SqlLiteCopyDbHelper(this);
+//		dbHelper.openDataBase();
+		//delete database
+		Prefs pref = new Prefs(this.getApplicationContext());
+		String strDB = pref.getStringValue("", Constant.KEY_UPDATE);
+		if(strDB.equals("") || !strDB.equals(Constant.KEY_UPDATE) ) {
+			ULog.i("a", "Delete database....");
+			this.deleteDatabase(Constant.DB_NAME_V2);
+		}
+
+		SqlLiteCopyDbHelper dbHelper = new SqlLiteCopyDbHelper(this);
+		if(dbHelper.openDataBase()) {
+			pref.putStringValue(Constant.KEY_UPDATE, Constant.KEY_UPDATE);
+		}
+		else
+			ULog.e("a", "Import Error!!!!!");
+
+		////
 		
 		daoMaster = new DaoMaster(DbController.init(MyApplication.this, true));
 		if (BaseActivity.pref == null)
